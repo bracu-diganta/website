@@ -1,0 +1,94 @@
+import React from 'react';
+import { SectionReveal } from '../ui/SectionReveal';
+import { sponsorsData } from '../../data/sponsors';
+import { MagneticButton } from '../ui/MagneticButton';
+
+export const SponsorUs: React.FC = () => {
+  return (
+    <SectionReveal id="sponsor" className="relative py-12 overflow-hidden">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6">
+
+        {/* Header */}
+        <div className="flex flex-col items-center text-center mb-12">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="h-[2px] w-8 bg-[#E11D48]" />
+            <span className="text-[#E11D48] font-mono tracking-widest text-sm uppercase">Partnerships</span>
+            <div className="h-[2px] w-8 bg-[#E11D48]" />
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight font-orbitron uppercase">Fuel Our Next Breakthrough</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16">
+          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+            <h3 className="text-xl font-bold text-gray-900 mb-3 font-orbitron uppercase group-hover:text-[#2563EB] transition-colors">Sponsorship</h3>
+            <p className="text-gray-500 leading-relaxed text-sm md:text-base">
+              Gain premium brand visibility. Interact directly with our latest aerospace missions and secure your spot on our flagship rovers and satellites.
+            </p>
+          </div>
+          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+            <h3 className="text-xl font-bold text-gray-900 mb-3 font-orbitron uppercase group-hover:text-[#2563EB] transition-colors">Investment & Support</h3>
+            <p className="text-gray-500 leading-relaxed text-sm md:text-base">
+              Drive our research forward. We invite companies to provide technological resources, financial investments, and collaborative expertise.
+            </p>
+          </div>
+          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+            <h3 className="text-xl font-bold text-gray-900 mb-3 font-orbitron uppercase group-hover:text-[#2563EB] transition-colors">Partners</h3>
+            <p className="text-gray-500 leading-relaxed text-sm md:text-base">
+              Join our network of industry leaders. Collaborate on cutting-edge space technology and foster the growth of STEM education in Bangladesh.
+            </p>
+          </div>
+        </div>
+
+        {/* Marquee Section */}
+        <div className="relative w-full max-w-[100vw] overflow-hidden -mx-6 md:mx-0 py-10">
+          {/* Gradient Fades for edges */}
+          <div className="absolute top-0 bottom-0 left-0 w-24 md:w-48 bg-gradient-to-r from-[#eef2f5] to-transparent z-10" />
+          <div className="absolute top-0 bottom-0 right-0 w-24 md:w-48 bg-gradient-to-l from-[#eef2f5] to-transparent z-10" />
+
+          {/* Marquee Track */}
+          <div className="flex whitespace-nowrap animate-marquee w-max items-center gap-16 md:gap-24 px-8">
+            {/* Double the array to create seamless loop */}
+            {[...sponsorsData, ...sponsorsData].map((sponsor, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-4 text-gray-400 hover:text-[#2563EB] transition-colors duration-300 group cursor-pointer"
+              >
+                {sponsor.logoUrl ? (
+                  <img src={sponsor.logoUrl} alt={sponsor.name} className="h-10 md:h-12 w-auto max-w-[120px] md:max-w-[160px] object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300 mix-blend-multiply" />
+                ) : (
+                  <>
+                    <div className="text-gray-400 group-hover:text-[#2563EB] transition-colors duration-300">
+                      {sponsor.icon}
+                    </div>
+                    <span className="font-orbitron text-2xl md:text-3xl font-bold tracking-wider">
+                      {sponsor.name}
+                    </span>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-16 flex justify-center">
+          <MagneticButton className="bg-gray-900 text-white hover:bg-[#2563EB] py-4 px-8 rounded-full font-mono uppercase tracking-widest text-sm transition-colors shadow-xl shadow-gray-900/10">
+            Become a Partner
+          </MagneticButton>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          animation: marquee 25s linear infinite;
+        }
+        .animate-marquee:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+    </SectionReveal>
+  );
+};
