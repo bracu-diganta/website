@@ -149,9 +149,9 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-7 flex flex-col gap-4 md:gap-6">
 
             {/* Top Wide Bento: Newsletter / Contact */}
-            <div className="bg-white rounded-3xl p-8 md:p-10 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 flex flex-col md:flex-row gap-8 items-center justify-between relative overflow-hidden">
+            <div className="bg-white rounded-3xl p-8 md:p-10 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between relative">
               {/* Decorative graphic inside the card */}
-              <div className="absolute -right-10 -top-10 text-slate-50 opacity-50 pointer-events-none transform rotate-12">
+              <div className="absolute -right-10 -top-10 text-slate-50 opacity-50 pointer-events-none transform rotate-12 overflow-hidden">
                 <Send size={180} strokeWidth={0.5} />
               </div>
 
@@ -160,14 +160,14 @@ export const Footer: React.FC = () => {
                 <p className="text-slate-500 text-sm max-w-xs font-medium">Get in touch with us for mission updates and research breakthroughs.</p>
               </div>
 
-              <div className="relative z-10 w-full md:w-auto flex-1 max-w-md">
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:p-1 bg-transparent sm:bg-slate-50 sm:border border-slate-200 rounded-2xl">
+              <div className="relative z-20 w-full md:w-auto md:flex-1 shrink-0 max-w-md mt-6 md:mt-0">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-1.5 sm:p-1.5 bg-transparent sm:bg-slate-50 sm:border border-slate-200 rounded-2xl w-full">
                   <input
                     type="email"
                     placeholder="ENTER EMAIL ADDRESS"
-                    className="w-full bg-slate-50 sm:bg-transparent border border-slate-200 sm:border-none rounded-xl sm:rounded-none outline-none px-4 py-4 sm:py-3 font-mono text-xs text-slate-900 placeholder:text-slate-400 font-bold tracking-wider focus:border-blue-500 transition-colors"
+                    className="w-full shrink-0 bg-slate-50 sm:bg-transparent border border-slate-200 sm:border-transparent rounded-xl outline-none px-5 py-4 font-mono text-xs text-slate-900 placeholder:text-slate-400 font-bold tracking-wider focus:bg-white focus:border-blue-500 transition-all z-10"
                   />
-                  <button className="w-full sm:w-auto justify-center bg-blue-600 hover:bg-slate-900 text-white rounded-xl px-6 py-4 sm:py-3 font-mono text-[10px] tracking-widest font-bold uppercase transition-colors flex items-center gap-2 shrink-0">
+                  <button className="w-full shrink-0 sm:w-auto flex justify-center items-center bg-blue-600 hover:bg-slate-900 text-white rounded-xl px-8 py-4 font-mono text-[11px] tracking-widest font-bold uppercase transition-all gap-2 shadow-lg shadow-blue-600/20 sm:shadow-none z-10">
                     <Send size={14} /> Send
                   </button>
                 </div>
@@ -204,7 +204,7 @@ export const Footer: React.FC = () => {
                 </h4>
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { name: 'Facebook', url: 'https://www.facebook.com/bishal040/', icon: <FacebookIcon className="w-5 h-5" /> },
+                    { name: 'Facebook', url: 'https://www.facebook.com/profile.php?id=61574161791951', icon: <FacebookIcon className="w-5 h-5" /> },
                     { name: 'LinkedIn', url: '#', icon: <LinkedinIcon className="w-5 h-5" /> },
                     { name: 'Instagram', url: '#', icon: <InstagramIcon className="w-5 h-5" /> }
                   ].map((social) => (
