@@ -52,7 +52,8 @@ const TECHNICAL_SKILLS_CATEGORIES = [
     skills: [
       'SolidWorks/Fusion 360',
       'ANSYS Mechanical',
-      'ANSYS Fluent (CFD)'
+      'ANSYS Fluent (CFD)',
+      'Robot Operating System - Gazebo, Webots'
     ]
   },
   {

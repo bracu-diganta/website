@@ -112,14 +112,25 @@ export const Team: React.FC = () => {
   const currentYearData = teamData.find(d => d.year === '2026') || teamData[0];
   
   // Reconstruct a subset of crew for the Home page bento grid
-  const crewData = [
+  const fullCrewData = [
     ...currentYearData.supervisors,
     ...currentYearData.advisors,
     ...(currentYearData.management || []),
     ...currentYearData.teamLeads,
     ...currentYearData.subTeamLeads,
     ...currentYearData.teamMembers
-  ].slice(0, 7);
+  ];
+
+  const kaushikIndex = fullCrewData.findIndex(m => m.name.includes('Kaushik'));
+  const chironjeetIndex = fullCrewData.findIndex(m => m.name.includes('Chironjeet'));
+
+  if (kaushikIndex !== -1 && chironjeetIndex !== -1) {
+    const temp = fullCrewData[kaushikIndex];
+    fullCrewData[kaushikIndex] = fullCrewData[chironjeetIndex];
+    fullCrewData[chironjeetIndex] = temp;
+  }
+
+  const crewData = fullCrewData.slice(0, 7);
 
   // Uniform Layout for all crew members
   const uniformLayout = { 
