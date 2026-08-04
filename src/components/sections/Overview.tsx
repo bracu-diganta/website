@@ -29,7 +29,7 @@ export const Overview: React.FC = () => {
   }, []);
 
   return (
-    <section id="overview" ref={sectionRef} className="pt-16 sm:pt-20 md:pt-32 lg:pt-48 pb-4 md:pb-6 relative z-10 bg-[#eef2f5] overflow-y-auto md:overflow-hidden h-full flex flex-col justify-start md:justify-center">
+    <section id="overview" ref={sectionRef} className="pt-28 sm:pt-24 md:pt-32 lg:pt-48 pb-4 md:pb-6 relative z-10 bg-[#eef2f5] overflow-y-auto md:overflow-hidden h-full flex flex-col justify-start md:justify-center">
 
       {/* Massive Background Text */}
       <div className="hidden md:flex absolute -top-12 left-1/2 -translate-x-1/2 w-full overflow-hidden justify-center pointer-events-none opacity-[0.03] select-none">
@@ -78,7 +78,7 @@ export const Overview: React.FC = () => {
             </div>
 
             {/* Vision & Mission */}
-            <div className="mt-4 md:mt-8 grid grid-cols-2 gap-3 md:gap-4">
+            <div className="hidden sm:grid mt-4 md:mt-8 grid-cols-2 gap-3 md:gap-4">
               <div className="bg-white/60 backdrop-blur-md border border-gray-200/60 rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-6 lg:p-8 hover:shadow-[0_10px_30px_rgba(37,99,235,0.08)] hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1.5 h-full bg-[#2563EB] opacity-0 group-hover:opacity-100 transition-opacity" />
                 <h4 className="font-orbitron font-bold text-gray-900 uppercase tracking-widest text-xs sm:text-sm md:text-base mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3">
