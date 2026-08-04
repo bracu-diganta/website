@@ -64,7 +64,7 @@ export const HomeHero: React.FC = () => {
 
       {/* LEFT HALF (Top in mobile, Left in desktop) */}
       <div
-        className="hero-left-half relative w-full md:w-1/2 h-1/2 md:h-full bg-[#eef2f5] flex flex-col items-center justify-center p-4 pt-24 sm:p-6 sm:pt-6 md:p-12 will-change-transform z-10"
+        className="hero-left-half relative w-full md:w-1/2 h-1/2 md:h-full bg-[#eef2f5] flex flex-col items-center justify-center p-4 pt-16 sm:p-6 md:p-12 will-change-transform z-10"
       >
         <div className="relative z-10 text-center flex flex-col items-center px-4 w-full max-w-[100vw]">
           <p className="text-telemetry-cyan font-mono tracking-[0.1em] md:tracking-[0.2em] text-xs sm:text-sm md:text-lg lg:text-xl uppercase mb-2 sm:mb-4 md:mb-8 max-w-sm md:max-w-2xl mx-auto leading-relaxed">
@@ -94,7 +94,7 @@ export const HomeHero: React.FC = () => {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-1 sm:bottom-4 md:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce z-10 hidden sm:flex">
+        <div className="absolute bottom-2 sm:bottom-4 md:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce z-10 hidden sm:flex">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-telemetry-cyan w-6 h-6 md:w-8 md:h-8">
             <path d="M12 5v14M19 12l-7 7-7-7" />
           </svg>
