@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5000;
 
 // Setup Multer for CV uploads using Memory Storage for MongoDB
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB limit
+const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } }); // 2MB limit
 
 // Middleware
 app.use(cors());
