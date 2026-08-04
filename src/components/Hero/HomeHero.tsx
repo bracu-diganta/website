@@ -67,7 +67,7 @@ export const HomeHero: React.FC = () => {
         className="hero-left-half relative w-full md:w-1/2 h-1/2 md:h-full bg-[#eef2f5] flex flex-col items-center justify-center p-4 pt-24 sm:p-6 sm:pt-6 md:p-12 will-change-transform z-10"
       >
         <div className="relative z-10 text-center flex flex-col items-center px-4 w-full max-w-[100vw]">
-          <p className="text-telemetry-cyan font-mono tracking-[0.1em] md:tracking-[0.2em] text-xs sm:text-sm md:text-lg lg:text-xl uppercase mb-4 md:mb-8 max-w-sm md:max-w-2xl mx-auto leading-relaxed">
+          <p className="text-telemetry-cyan font-mono tracking-[0.1em] md:tracking-[0.2em] text-xs sm:text-sm md:text-lg lg:text-xl uppercase mb-2 sm:mb-4 md:mb-8 max-w-sm md:max-w-2xl mx-auto leading-relaxed">
             Small Satellite Research under LaSSET at BRAC University
           </p>
           <h1 className="font-orbitron text-4xl sm:text-5xl md:text-6xl lg:text-[6rem] xl:text-[7rem] font-black text-gray-900 tracking-[-0.04em] leading-[0.9] uppercase">
@@ -75,11 +75,11 @@ export const HomeHero: React.FC = () => {
             <br />
             DIGANTA
           </h1>
-          <div className="w-16 md:w-32 h-[3px] md:h-[4px] bg-telemetry-cyan my-6 md:my-10" />
+          <div className="w-16 md:w-32 h-[3px] md:h-[4px] bg-telemetry-cyan my-3 sm:my-6 md:my-10" />
           <p className="text-lg md:text-xl lg:text-3xl text-gray-600 max-w-lg font-medium px-4">
             Looking Over the Horizon
           </p>
-          <div className="mt-8 md:mt-12 pointer-events-auto z-50">
+          <div className="mt-4 sm:mt-8 md:mt-12 pointer-events-auto z-50">
             <button
               onClick={() => navigate('/careers')}
               className="group bg-[#10B981] text-white rounded-full px-10 py-4 md:py-5 text-sm md:text-base font-mono font-black tracking-[0.2em] uppercase transition-all duration-300 hover:bg-[#059669] hover:scale-110 shadow-[0_10px_30px_rgba(16,185,129,0.5)] flex items-center gap-3"
@@ -94,7 +94,7 @@ export const HomeHero: React.FC = () => {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-4 md:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce z-10">
+        <div className="absolute bottom-1 sm:bottom-4 md:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce z-10 hidden sm:flex">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-telemetry-cyan w-6 h-6 md:w-8 md:h-8">
             <path d="M12 5v14M19 12l-7 7-7-7" />
           </svg>
