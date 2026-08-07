@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, Download, Users, Briefcase, Cpu, X, FileText, ExternalLink, ChevronDown, CheckCircle2, Star, XCircle, RotateCcw, CheckSquare, Square } from 'lucide-react';
+import { Search, Filter, Download, Users, X, FileText, ExternalLink, ChevronDown, CheckCircle2, Star, XCircle, RotateCcw, CheckSquare, Square } from 'lucide-react';
 
 type ApplicationStatus = 'applied' | 'shortlisted' | 'selected' | 'rejected';
 
