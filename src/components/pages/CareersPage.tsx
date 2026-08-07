@@ -40,7 +40,7 @@ const TECHNICAL_SKILLS_CATEGORIES = [
     title: '1. Embedded Systems',
     subsystem: 'Embedded Systems Subsystem',
     skills: [
-      'C/C++, Python (firmware)',
+      'C/C++, Micro Python, Circuit Python',
       'Arduino IDE, PlatformIO, STM32CubeIDE (firmware)',
       'KiCad/EasyEDA/Altium Designer (PCB Design)',
       'Proteus (circuit simulation)'
@@ -51,9 +51,10 @@ const TECHNICAL_SKILLS_CATEGORIES = [
     subsystem: 'Mechanical Subsystem',
     skills: [
       'SolidWorks/Fusion 360',
-      'ANSYS Mechanical',
-      'ANSYS Fluent (CFD)',
-      'Robot Operating System (Gazebo, Webots)'
+      'ANSYS, ANSYS Fluent (CFD)',
+      'Robot Operating System (ROS2, Gazebo, Webots)',
+      'Open Rocket, Simulit',
+      'Physics'
     ]
   },
   {
@@ -62,14 +63,19 @@ const TECHNICAL_SKILLS_CATEGORIES = [
     skills: [
       'LoRa, XBee, ESP-NOW',
       'CST Studio/HFSS (Antenna Design)',
-      'MATLAB'
+      'MATLAB, C/C++, Python',
+      'Antenna Fabrication',
+      'Digital Number System'
     ]
   },
   {
     title: '4. Software',
     subsystem: 'Computational Intelligence Subsystem',
     skills: [
-      'Python, C++, JavaScript',
+      'Python, Java, C++, JavaScript',
+      'Artificial Intelligence, Machine Learning, Deep Learning',
+      'MERN',
+      'Flutter',
       'Git & GitHub',
       'MATLAB (Software)',
       'OpenCV (Basic)',

@@ -29,7 +29,7 @@ export const Overview: React.FC = () => {
   }, []);
 
   return (
-    <section id="overview" ref={sectionRef} className="pt-28 sm:pt-24 md:pt-32 lg:pt-48 pb-4 md:pb-6 relative z-10 bg-[#eef2f5] overflow-y-auto md:overflow-hidden h-full flex flex-col justify-start md:justify-center">
+    <section id="overview" ref={sectionRef} className="min-h-screen md:h-screen w-full relative bg-[#eef2f5] overflow-hidden flex flex-col py-24 md:py-32 z-10">
 
       {/* Massive Background Text */}
       <div className="hidden md:flex absolute -top-12 left-1/2 -translate-x-1/2 w-full overflow-hidden justify-center pointer-events-none opacity-[0.03] select-none">
@@ -45,12 +45,16 @@ export const Overview: React.FC = () => {
 
           {/* Left Column: About Us + Vision/Mission */}
           <div className="lg:col-span-7 flex flex-col reveal-elem">
-            <div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-orbitron font-bold text-gray-900 leading-[1.1] mb-3 md:mb-6 uppercase tracking-tight">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-cyan-500">
-                  About Us
-                </span>
+            <div className="mb-12 md:mb-16">
+              <div className="flex gap-1 mb-4">
+                <div className="w-2 h-2 bg-blue-600" />
+                <div className="w-2 h-2 bg-blue-400" />
+                <div className="w-2 h-2 bg-blue-200" />
+              </div>
+              <h2 className="font-orbitron text-4xl md:text-6xl font-black tracking-widest uppercase drop-shadow-sm mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-cyan-500">
+                About Us
               </h2>
+            </div>
 
               <div className="text-gray-600 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed mb-4 md:mb-8 max-w-xl space-y-3 md:space-y-4">
                 <p>
@@ -75,7 +79,6 @@ export const Overview: React.FC = () => {
                 Download Portfolio
                 <ArrowUpRight size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </MagneticButton>
-            </div>
 
             {/* Vision & Mission */}
             <div className="hidden sm:grid mt-4 md:mt-8 grid-cols-2 gap-3 md:gap-4">

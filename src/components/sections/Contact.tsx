@@ -134,7 +134,7 @@ export const Contact: React.FC = () => {
   };
 
   return (
-    <section id="contact" ref={sectionRef} className="min-h-screen w-full relative bg-[#F4F4F6] overflow-hidden flex flex-col justify-center py-24 lg:py-32 border-t border-slate-200/60 z-0">
+    <section id="contact" ref={sectionRef} className="min-h-screen w-full relative bg-[#F4F4F6] overflow-hidden flex flex-col justify-center py-24 md:py-32 border-t border-slate-200/60 z-0">
 
       {/* ── MASSIVE CRAZY GLOWING ORBS (OPTIMIZED) ── */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none -z-10"
@@ -148,14 +148,21 @@ export const Contact: React.FC = () => {
         style={{ backgroundImage: 'radial-gradient(circle at center, #94a3b8 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
       {/* Main Container */}
-      <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 flex flex-col h-full z-10 relative">
+      <div className="w-full max-w-[90rem] mx-auto px-4 md:px-8 flex flex-col h-full z-10 relative">
 
         {/* ── TOP: Horizontal Hook Texts ── */}
-        <div className="bento-reveal flex flex-col gap-4 mb-6 lg:mb-8 shrink-0 relative z-20 will-change-transform">
+        <div className="bento-reveal flex flex-col gap-4 mb-12 md:mb-16 shrink-0 relative z-20 will-change-transform">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <h2 className="font-orbitron text-4xl lg:text-5xl xl:text-6xl font-black text-slate-900 tracking-tighter leading-[1.1]">
-              Fuel Our Next <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 pb-1">Breakthrough</span>
-            </h2>
+            <div className="mb-2 md:mb-0">
+              <div className="flex gap-1 mb-4">
+                <div className="w-2 h-2 bg-blue-600" />
+                <div className="w-2 h-2 bg-blue-400" />
+                <div className="w-2 h-2 bg-blue-200" />
+              </div>
+              <h2 className="font-orbitron text-4xl md:text-6xl font-black tracking-widest uppercase drop-shadow-sm mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-cyan-500">
+                Fuel Our Next Breakthrough
+              </h2>
+            </div>
             <div className="flex items-center gap-6 lg:gap-10 shrink-0">
               <img src={`${import.meta.env.BASE_URL}Bracu%20Logo.png`} alt="BRAC University Logo" className="h-10 lg:h-12 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500 mix-blend-multiply" />
               <img src={`${import.meta.env.BASE_URL}Lasset%20Logo.png`} alt="Lasset Logo" className="h-10 lg:h-12 object-contain grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500 mix-blend-multiply" />
