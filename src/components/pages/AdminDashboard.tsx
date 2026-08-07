@@ -25,6 +25,9 @@ interface Application {
   technicalSkills?: string[];
   portfolioLinks?: string;
   skillsOrStrengths: string;
+  relevantExperiences: string;
+  hopeToLearn: string;
+  createdAt: string;
   cvFileUrl?: string;
   cvFilename?: string;
   cvFile?: {
