@@ -1,9 +1,7 @@
 import React, { useRef } from 'react';
-import * as Icons from 'lucide-react';
 import { ArrowUp, ArrowUpRight, Send, MapPin, Activity } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MouseCrosshair } from '../ui/MouseCrosshair';
-import { sponsorsData } from '../../data/sponsors';
 
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>

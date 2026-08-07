@@ -107,21 +107,7 @@ const CrewCard = ({ member, layout, onClick }: CrewCardProps) => {
 
 export const Team: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
   const [selectedMember, setSelectedMember] = useState<TeamMemberType | null>(null);
-  const [ctaInView, setCtaInView] = useState(false);
-
-  // Detect when the CTA buttons enter the viewport on mobile
-  useEffect(() => {
-    const el = ctaRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setCtaInView(entry.isIntersecting),
-      { threshold: 0 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   // Get 2026 data for the home page showcase
   const currentYearData = teamData.find(d => d.year === '2026') || teamData[0];
@@ -287,7 +273,7 @@ export const Team: React.FC = () => {
         </div>
 
         {/* CTAs */}
-        <div ref={ctaRef} className="flex flex-col md:flex-row items-center justify-center gap-6">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
           <Link
             to="/team"
             className="group relative inline-flex items-center justify-center px-8 py-4 md:px-10 md:py-5 font-mono text-xs md:text-sm font-bold tracking-[0.2em] text-slate-900 uppercase bg-white border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
