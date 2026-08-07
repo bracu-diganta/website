@@ -258,7 +258,7 @@ export const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#eef2f5] text-gray-900 p-8 md:p-16">
+    <div className="min-h-screen bg-[#eef2f5] text-gray-900 px-8 py-24 md:px-16 md:pt-32 md:pb-16">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
