@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, Download, Users, Briefcase, Cpu, X, FileText, ExternalLink, ChevronDown } from 'lucide-react';
+import { Search, Filter, Download, Users, Briefcase, Cpu, X, FileText, ExternalLink, ChevronDown, CheckCircle2, Star, XCircle, RotateCcw, CheckSquare, Square } from 'lucide-react';
+
+type ApplicationStatus = 'applied' | 'shortlisted' | 'selected' | 'rejected';
 
 interface Application {
   _id: string;
@@ -28,6 +30,7 @@ interface Application {
   relevantExperiences: string;
   hopeToLearn: string;
   createdAt: string;
+  status?: ApplicationStatus;
   cvFileUrl?: string;
   cvFilename?: string;
   cvFile?: {
@@ -35,6 +38,20 @@ interface Application {
     contentType: string;
   };
 }
+
+const STATUS_CONFIG: Record<ApplicationStatus, { label: string; color: string; bg: string; border: string; icon: React.ReactNode }> = {
+  applied: { label: 'Applied', color: 'text-gray-600', bg: 'bg-gray-100', border: 'border-gray-200', icon: <FileText size={14} /> },
+  shortlisted: { label: 'Shortlisted', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200', icon: <Star size={14} /> },
+  selected: { label: 'Selected', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: <CheckCircle2 size={14} /> },
+  rejected: { label: 'Rejected', color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-200', icon: <XCircle size={14} /> },
+};
+
+const TAB_LIST: { key: 'all' | ApplicationStatus; label: string }[] = [
+  { key: 'all', label: 'All Applications' },
+  { key: 'shortlisted', label: 'Shortlisted' },
+  { key: 'selected', label: 'Selected' },
+  { key: 'rejected', label: 'Rejected' },
+];
 
 export const AdminDashboard: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -49,7 +66,13 @@ export const AdminDashboard: React.FC = () => {
   const [departmentFilter, setDepartmentFilter] = useState('All');
   const [teamFilter, setTeamFilter] = useState('All');
 
+  // Pipeline State
+  const [activeTab, setActiveTab] = useState<'all' | ApplicationStatus>('all');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [statusUpdating, setStatusUpdating] = useState<string | null>(null);
+
   const ADMIN_EMAIL = 'istiak.ahmmed.bishal@g.bracu.ac.bd';
+  const apiUrl = import.meta.env.VITE_CAREERS_API_URL;
 
   useEffect(() => {
     if (!user || user.email !== ADMIN_EMAIL) {
@@ -61,7 +84,6 @@ export const AdminDashboard: React.FC = () => {
     // Fetch applications from the backend
     const fetchApplications = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_CAREERS_API_URL;
         const response = await fetch(`${apiUrl}/applications`);
         const data = await response.json();
         if (data.success) {
@@ -77,22 +99,90 @@ export const AdminDashboard: React.FC = () => {
     fetchApplications();
   }, [user, navigate, signOut]);
 
+  // --- Status Update Handlers ---
+  const updateStatus = async (id: string, status: ApplicationStatus) => {
+    setStatusUpdating(id);
+    try {
+      const response = await fetch(`${apiUrl}/applications/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setApplications(prev => prev.map(app => app._id === id ? { ...app, status } : app));
+        if (selectedApp && selectedApp._id === id) {
+          setSelectedApp({ ...selectedApp, status });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update status', error);
+    } finally {
+      setStatusUpdating(null);
+    }
+  };
+
+  const bulkUpdateStatus = async (status: ApplicationStatus) => {
+    if (selectedIds.size === 0) return;
+    setStatusUpdating('bulk');
+    try {
+      const ids = Array.from(selectedIds);
+      const response = await fetch(`${apiUrl}/applications/bulk-status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, status }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setApplications(prev => prev.map(app => ids.includes(app._id) ? { ...app, status } : app));
+        setSelectedIds(new Set());
+      }
+    } catch (error) {
+      console.error('Failed to bulk update status', error);
+    } finally {
+      setStatusUpdating(null);
+    }
+  };
+
+  const getAppStatus = (app: Application): ApplicationStatus => app.status || 'applied';
+
+  // --- Selection Handlers ---
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = (apps: Application[]) => {
+    const allIds = apps.map(a => a._id);
+    const allSelected = allIds.every(id => selectedIds.has(id));
+    if (allSelected) {
+      setSelectedIds(prev => {
+        const next = new Set(prev);
+        allIds.forEach(id => next.delete(id));
+        return next;
+      });
+    } else {
+      setSelectedIds(prev => {
+        const next = new Set(prev);
+        allIds.forEach(id => next.add(id));
+        return next;
+      });
+    }
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-[#eef2f5] flex items-center justify-center font-mono text-gray-500">Loading Dashboard...</div>;
   }
 
-
-
   // Derived Statistics
   const totalApps = applications.length;
-  const techApps = applications.filter(a => a.teamType === 'Technical' || a.teamType === 'Technical Team').length;
-  const nonTechApps = applications.filter(a => a.teamType === 'Non-Technical' || a.teamType === 'Non-Technical Team').length;
-  
-  const deptCount = applications.reduce((acc, app) => {
-    acc[app.department] = (acc[app.department] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-  const topDept = Object.entries(deptCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+  const shortlistedCount = applications.filter(a => getAppStatus(a) === 'shortlisted').length;
+  const selectedCount = applications.filter(a => getAppStatus(a) === 'selected').length;
+  const rejectedCount = applications.filter(a => getAppStatus(a) === 'rejected').length;
 
   // Derived Filtered List
   const filteredApplications = applications.filter(app => {
@@ -103,15 +193,16 @@ export const AdminDashboard: React.FC = () => {
     
     const matchesDept = departmentFilter === 'All' ? true : app.department === departmentFilter;
     const matchesTeam = teamFilter === 'All' ? true : app.teamType === teamFilter;
+    const matchesTab = activeTab === 'all' ? true : getAppStatus(app) === activeTab;
     
-    return matchesSearch && matchesDept && matchesTeam;
+    return matchesSearch && matchesDept && matchesTeam && matchesTab;
   });
 
   const uniqueDepartments = ['All', ...Array.from(new Set(applications.map(a => a.department)))];
 
   const exportToCSV = () => {
     const headers = [
-      'Date', 'Name', 'Student ID', 'University Email', 'Personal Email', 
+      'Date', 'Status', 'Name', 'Student ID', 'University Email', 'Personal Email', 
       'Department', 'Semester', 'Completed Credits', 'Team Type', 'First Preference', 'First Preference Subsection', 
       'Second Preference', 'Second Preference Subsection', 'Technical Skills', 'Software Tools', 'Comfortable Tasks',
       'Club Involvement', 'Portfolio Links', 'Why Diganta', 'Aspects of Interest', 
@@ -131,6 +222,7 @@ export const AdminDashboard: React.FC = () => {
 
     const csvData = filteredApplications.map(app => [
       escapeCSV(new Date(app.createdAt).toLocaleDateString()),
+      escapeCSV(getAppStatus(app)),
       escapeCSV(app.fullName),
       escapeCSV(app.studentId),
       escapeCSV(app.universityEmail),
@@ -160,7 +252,7 @@ export const AdminDashboard: React.FC = () => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `diganta-applications-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `diganta-applications-${activeTab}-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -173,7 +265,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
             <h1 className="text-4xl font-orbitron font-black text-gray-900 uppercase">Admin Dashboard</h1>
-            <p className="text-gray-500 font-mono text-sm mt-2">Recruitment Applications</p>
+            <p className="text-gray-500 font-mono text-sm mt-2">Recruitment Pipeline</p>
           </div>
           <button
             onClick={() => signOut()}
@@ -184,37 +276,112 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Analytics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] flex items-center gap-4">
             <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl">
               <Users size={24} />
             </div>
             <div>
-              <p className="text-xs font-mono text-gray-400 uppercase tracking-wider">Total Applications</p>
+              <p className="text-xs font-mono text-gray-400 uppercase tracking-wider">Total</p>
               <p className="text-2xl font-bold text-gray-900">{totalApps}</p>
             </div>
           </div>
           
           <div className="bg-white p-6 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] flex items-center gap-4">
-            <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl">
-              <Cpu size={24} />
+            <div className="p-4 bg-amber-50 text-amber-600 rounded-2xl">
+              <Star size={24} />
             </div>
             <div>
-              <p className="text-xs font-mono text-gray-400 uppercase tracking-wider">Tech vs Non-Tech</p>
-              <p className="text-2xl font-bold text-gray-900">{techApps} <span className="text-gray-300 text-lg">/</span> {nonTechApps}</p>
+              <p className="text-xs font-mono text-gray-400 uppercase tracking-wider">Shortlisted</p>
+              <p className="text-2xl font-bold text-amber-600">{shortlistedCount}</p>
             </div>
           </div>
 
           <div className="bg-white p-6 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] flex items-center gap-4">
-            <div className="p-4 bg-purple-50 text-purple-600 rounded-2xl">
-              <Briefcase size={24} />
+            <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl">
+              <CheckCircle2 size={24} />
             </div>
             <div>
-              <p className="text-xs font-mono text-gray-400 uppercase tracking-wider">Top Department</p>
-              <p className="text-xl font-bold text-gray-900 line-clamp-1">{topDept}</p>
+              <p className="text-xs font-mono text-gray-400 uppercase tracking-wider">Selected</p>
+              <p className="text-2xl font-bold text-emerald-600">{selectedCount}</p>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] flex items-center gap-4">
+            <div className="p-4 bg-red-50 text-red-600 rounded-2xl">
+              <XCircle size={24} />
+            </div>
+            <div>
+              <p className="text-xs font-mono text-gray-400 uppercase tracking-wider">Rejected</p>
+              <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
             </div>
           </div>
         </div>
+
+        {/* Pipeline Tabs */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {TAB_LIST.map(tab => {
+            const count = tab.key === 'all' ? totalApps : applications.filter(a => getAppStatus(a) === tab.key).length;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => { setActiveTab(tab.key); setSelectedIds(new Set()); }}
+                className={`px-5 py-2.5 rounded-full font-mono text-xs font-bold tracking-wider uppercase transition-all ${
+                  activeTab === tab.key
+                    ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20'
+                    : 'bg-white text-gray-500 hover:bg-gray-100 shadow-sm'
+                }`}
+              >
+                {tab.label} <span className={`ml-1.5 ${activeTab === tab.key ? 'text-gray-300' : 'text-gray-400'}`}>({count})</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Bulk Action Toolbar */}
+        {selectedIds.size > 0 && (
+          <div className="bg-gray-900 rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3 animate-in slide-in-from-top duration-200 shadow-xl">
+            <span className="text-white font-mono text-xs font-bold tracking-wider uppercase">
+              {selectedIds.size} selected
+            </span>
+            <div className="h-4 w-px bg-gray-600"></div>
+            <button
+              onClick={() => bulkUpdateStatus('shortlisted')}
+              disabled={statusUpdating === 'bulk'}
+              className="px-4 py-2 bg-amber-500 text-white rounded-full font-mono text-[10px] font-bold tracking-wider uppercase hover:bg-amber-600 transition-colors disabled:opacity-50"
+            >
+              <Star size={12} className="inline mr-1.5 -mt-0.5" /> Shortlist
+            </button>
+            <button
+              onClick={() => bulkUpdateStatus('selected')}
+              disabled={statusUpdating === 'bulk'}
+              className="px-4 py-2 bg-emerald-500 text-white rounded-full font-mono text-[10px] font-bold tracking-wider uppercase hover:bg-emerald-600 transition-colors disabled:opacity-50"
+            >
+              <CheckCircle2 size={12} className="inline mr-1.5 -mt-0.5" /> Select
+            </button>
+            <button
+              onClick={() => bulkUpdateStatus('rejected')}
+              disabled={statusUpdating === 'bulk'}
+              className="px-4 py-2 bg-red-500 text-white rounded-full font-mono text-[10px] font-bold tracking-wider uppercase hover:bg-red-600 transition-colors disabled:opacity-50"
+            >
+              <XCircle size={12} className="inline mr-1.5 -mt-0.5" /> Reject
+            </button>
+            <button
+              onClick={() => bulkUpdateStatus('applied')}
+              disabled={statusUpdating === 'bulk'}
+              className="px-4 py-2 bg-gray-600 text-white rounded-full font-mono text-[10px] font-bold tracking-wider uppercase hover:bg-gray-500 transition-colors disabled:opacity-50"
+            >
+              <RotateCcw size={12} className="inline mr-1.5 -mt-0.5" /> Reset
+            </button>
+            <div className="flex-1"></div>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="px-4 py-2 text-gray-400 hover:text-white font-mono text-[10px] font-bold tracking-wider uppercase transition-colors"
+            >
+              Clear
+            </button>
+          </div>
+        )}
 
         {/* Search and Filters Toolbar */}
         <div className="bg-white rounded-3xl p-4 md:p-6 mb-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] flex flex-col lg:flex-row gap-4 justify-between items-center z-20 relative">
@@ -279,29 +446,52 @@ export const AdminDashboard: React.FC = () => {
           ) : filteredApplications.length === 0 ? (
             <div className="text-center text-gray-500 font-mono py-10">No applications match your search criteria.</div>
           ) : (
-            <table className="w-full text-left border-collapse min-w-[800px]">
+            <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider w-10"></th>
+                  <th className="pb-4 w-10 pl-2">
+                    <button
+                      onClick={() => toggleSelectAll(filteredApplications)}
+                      className="text-gray-400 hover:text-blue-500 transition-colors"
+                    >
+                      {filteredApplications.length > 0 && filteredApplications.every(a => selectedIds.has(a._id)) ? (
+                        <CheckSquare size={18} className="text-blue-500" />
+                      ) : (
+                        <Square size={18} />
+                      )}
+                    </button>
+                  </th>
                   <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider">Date</th>
                   <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider">Name</th>
                   <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider">Student ID</th>
                   <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider">Dept</th>
-                  <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider">Credits</th>
-                  <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider">Tech Skills</th>
+                  <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider">Status</th>
                   <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider">Preference</th>
                   <th className="pb-4 font-mono text-xs text-gray-400 uppercase tracking-wider text-right">Resume</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredApplications.map((app) => (
+                {filteredApplications.map((app) => {
+                  const status = getAppStatus(app);
+                  const config = STATUS_CONFIG[status];
+                  const isChecked = selectedIds.has(app._id);
+                  return (
                   <React.Fragment key={app._id}>
                     <tr 
                       onClick={() => setSelectedApp(app)}
-                      className="border-b border-gray-50 hover:bg-blue-50/50 transition-colors cursor-pointer group"
+                      className={`border-b border-gray-50 hover:bg-blue-50/50 transition-colors cursor-pointer group ${isChecked ? 'bg-blue-50/30' : ''}`}
                     >
-                      <td className="py-4 text-gray-400 group-hover:text-blue-500 transition-colors pl-4">
-                        <FileText size={18} />
+                      <td className="py-4 pl-2" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => toggleSelect(app._id)}
+                          className="text-gray-400 hover:text-blue-500 transition-colors"
+                        >
+                          {isChecked ? (
+                            <CheckSquare size={18} className="text-blue-500" />
+                          ) : (
+                            <Square size={18} />
+                          )}
+                        </button>
                       </td>
                       <td className="py-4 font-mono text-sm text-gray-500">
                         {new Date(app.createdAt).toLocaleDateString()}
@@ -309,15 +499,11 @@ export const AdminDashboard: React.FC = () => {
                       <td className="py-4 font-medium">{app.fullName}</td>
                       <td className="py-4 font-mono text-sm text-gray-600">{app.studentId}</td>
                       <td className="py-4 font-mono text-sm text-gray-600">{app.department}</td>
-                      <td className="py-4 font-mono text-sm text-gray-600">{app.completedCredits || '-'}</td>
                       <td className="py-4">
-                        {app.technicalSkills && app.technicalSkills.length > 0 ? (
-                          <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded text-[10px] font-semibold border border-blue-100 whitespace-nowrap">
-                            {app.technicalSkills.length} skills
-                          </span>
-                        ) : (
-                          <span className="text-gray-300 text-sm">-</span>
-                        )}
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 ${config.bg} ${config.color} ${config.border} border rounded-full text-[10px] font-bold tracking-wider uppercase`}>
+                          {config.icon}
+                          {config.label}
+                        </span>
                       </td>
                       <td className="py-4">
                         <span className="px-3 py-1 bg-[#eef2f5] text-gray-600 rounded-full font-mono text-[10px] tracking-wider uppercase font-bold">
@@ -356,7 +542,8 @@ export const AdminDashboard: React.FC = () => {
                       </td>
                     </tr>
                   </React.Fragment>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           )}
@@ -398,7 +585,18 @@ export const AdminDashboard: React.FC = () => {
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-slate-50/50">
               <div>
                 <h2 className="text-xl font-orbitron font-bold text-gray-900">{selectedApp.fullName}</h2>
-                <p className="text-sm font-mono text-gray-500 mt-1">{selectedApp.studentId} • {selectedApp.department}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-sm font-mono text-gray-500">{selectedApp.studentId} • {selectedApp.department}</p>
+                  {(() => {
+                    const s = getAppStatus(selectedApp);
+                    const c = STATUS_CONFIG[s];
+                    return (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 ${c.bg} ${c.color} ${c.border} border rounded-full text-[9px] font-bold tracking-wider uppercase`}>
+                        {c.icon} {c.label}
+                      </span>
+                    );
+                  })()}
+                </div>
               </div>
               <div className="flex items-center gap-4">
                 {(selectedApp.cvFileUrl || selectedApp.cvFile) && (
@@ -429,6 +627,47 @@ export const AdminDashboard: React.FC = () => {
                   <X size={24} />
                 </button>
               </div>
+            </div>
+
+            {/* Status Action Bar */}
+            <div className="px-6 py-3 border-b border-gray-100 bg-gray-50/80 flex flex-wrap items-center gap-2">
+              <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wider font-bold mr-2">Move to:</span>
+              {getAppStatus(selectedApp) !== 'shortlisted' && (
+                <button
+                  onClick={() => updateStatus(selectedApp._id, 'shortlisted')}
+                  disabled={statusUpdating === selectedApp._id}
+                  className="px-4 py-1.5 bg-amber-500 text-white rounded-full font-mono text-[10px] font-bold tracking-wider uppercase hover:bg-amber-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  <Star size={12} /> Shortlist
+                </button>
+              )}
+              {getAppStatus(selectedApp) !== 'selected' && (
+                <button
+                  onClick={() => updateStatus(selectedApp._id, 'selected')}
+                  disabled={statusUpdating === selectedApp._id}
+                  className="px-4 py-1.5 bg-emerald-500 text-white rounded-full font-mono text-[10px] font-bold tracking-wider uppercase hover:bg-emerald-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  <CheckCircle2 size={12} /> Select
+                </button>
+              )}
+              {getAppStatus(selectedApp) !== 'rejected' && (
+                <button
+                  onClick={() => updateStatus(selectedApp._id, 'rejected')}
+                  disabled={statusUpdating === selectedApp._id}
+                  className="px-4 py-1.5 bg-red-500 text-white rounded-full font-mono text-[10px] font-bold tracking-wider uppercase hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  <XCircle size={12} /> Reject
+                </button>
+              )}
+              {getAppStatus(selectedApp) !== 'applied' && (
+                <button
+                  onClick={() => updateStatus(selectedApp._id, 'applied')}
+                  disabled={statusUpdating === selectedApp._id}
+                  className="px-4 py-1.5 bg-gray-400 text-white rounded-full font-mono text-[10px] font-bold tracking-wider uppercase hover:bg-gray-500 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  <RotateCcw size={12} /> Reset
+                </button>
+              )}
             </div>
 
             {/* Scrollable Content */}

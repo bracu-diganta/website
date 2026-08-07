@@ -42,6 +42,9 @@ const applicationSchema = new mongoose.Schema({
     filename: String
   },
 
+  // Recruitment Pipeline Status
+  status: { type: String, enum: ['applied', 'shortlisted', 'selected', 'rejected'], default: 'applied' },
+
   createdAt: { type: Date, default: Date.now }
 });
 

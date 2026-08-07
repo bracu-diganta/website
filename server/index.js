@@ -4,8 +4,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import multer from 'multer';
-import fs from 'fs';
 import Contact from './models/Contact.js';
 import Application from './models/Application.js';
 
@@ -16,10 +14,6 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-// Setup Multer for CV uploads using Memory Storage for MongoDB
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } }); // 2MB limit
 
 // Middleware
 app.use(cors());
@@ -137,6 +131,60 @@ app.get('/api/careers/applications', async (req, res) => {
   } catch (error) {
     console.error('Error fetching applications:', error);
     res.status(500).json({ error: 'Failed to retrieve applications' });
+  }
+});
+
+// Route to update a single application's recruitment status
+app.patch('/api/careers/applications/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ['applied', 'shortlisted', 'selected', 'rejected'];
+    
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    }
+
+    const application = await Application.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true, select: '-cvFile.data' }
+    );
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    console.log(`Application ${req.params.id} status updated to: ${status}`);
+    res.status(200).json({ success: true, application });
+  } catch (error) {
+    console.error('Error updating application status:', error);
+    res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
+// Route to bulk-update multiple applications' recruitment status
+app.patch('/api/careers/applications/bulk-status', async (req, res) => {
+  try {
+    const { ids, status } = req.body;
+    const validStatuses = ['applied', 'shortlisted', 'selected', 'rejected'];
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'ids must be a non-empty array' });
+    }
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    }
+
+    const result = await Application.updateMany(
+      { _id: { $in: ids } },
+      { status }
+    );
+
+    console.log(`Bulk status update: ${result.modifiedCount} applications updated to ${status}`);
+    res.status(200).json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (error) {
+    console.error('Error in bulk status update:', error);
+    res.status(500).json({ error: 'Failed to bulk update status' });
   }
 });
 
