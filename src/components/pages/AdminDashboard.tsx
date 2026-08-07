@@ -25,9 +25,8 @@ interface Application {
   technicalSkills?: string[];
   portfolioLinks?: string;
   skillsOrStrengths: string;
-  relevantExperiences: string;
-  hopeToLearn: string;
-  createdAt: string;
+  cvFileUrl?: string;
+  cvFilename?: string;
   cvFile?: {
     filename: string;
     contentType: string;
@@ -323,7 +322,7 @@ export const AdminDashboard: React.FC = () => {
                         </span>
                       </td>
                       <td className="py-4 text-right">
-                        {app.cvFile ? (
+                        {(app.cvFileUrl || app.cvFile) ? (
                           <>
                             {/* Desktop Button - Opens Drawer + Split Screen */}
                             <button
@@ -336,9 +335,8 @@ export const AdminDashboard: React.FC = () => {
                             >
                               View CV
                             </button>
-                            {/* Mobile Button - Opens in new tab */}
                             <a
-                              href={`${import.meta.env.VITE_CAREERS_API_URL}/cv/${app._id}`}
+                              href={app.cvFileUrl || `${import.meta.env.VITE_CAREERS_API_URL}/cv/${app._id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
@@ -372,14 +370,14 @@ export const AdminDashboard: React.FC = () => {
           ></div>
 
           {/* Left Side: PDF Viewer */}
-          {isCvVisible && selectedApp.cvFile && (
+          {isCvVisible && (selectedApp.cvFileUrl || selectedApp.cvFile) && (
             <div className="relative flex-1 bg-slate-800/90 backdrop-blur p-4 lg:p-8 animate-in slide-in-from-left duration-300 flex-col z-10 border-r border-slate-700 hidden lg:flex">
                <div className="flex justify-between items-center text-white mb-4">
                   <h3 className="font-orbitron font-bold tracking-widest uppercase text-sm">Resume Preview</h3>
                   <button onClick={() => setIsCvVisible(false)} className="p-2 hover:bg-slate-700 rounded-full transition-colors text-slate-300 hover:text-white"><X size={20}/></button>
                </div>
                <iframe 
-                 src={`${import.meta.env.VITE_CAREERS_API_URL}/cv/${selectedApp._id}`} 
+                 src={selectedApp.cvFileUrl || `${import.meta.env.VITE_CAREERS_API_URL}/cv/${selectedApp._id}`} 
                  className="w-full h-full rounded-xl shadow-2xl bg-white" 
                  title="CV Preview"
                ></iframe>
@@ -387,7 +385,7 @@ export const AdminDashboard: React.FC = () => {
           )}
 
           {/* Empty Space Filler (so clicking outside still works when CV is closed) */}
-          {(!isCvVisible || !selectedApp.cvFile) && (
+          {(!isCvVisible || (!selectedApp.cvFileUrl && !selectedApp.cvFile)) && (
             <div className="flex-1 hidden lg:block" onClick={() => { setSelectedApp(null); setIsCvVisible(false); }}></div>
           )}
           
@@ -400,7 +398,7 @@ export const AdminDashboard: React.FC = () => {
                 <p className="text-sm font-mono text-gray-500 mt-1">{selectedApp.studentId} • {selectedApp.department}</p>
               </div>
               <div className="flex items-center gap-4">
-                {selectedApp.cvFile && (
+                {(selectedApp.cvFileUrl || selectedApp.cvFile) && (
                   <>
                     {/* Desktop Toggle Button */}
                     <button
@@ -410,9 +408,8 @@ export const AdminDashboard: React.FC = () => {
                       <ExternalLink size={14} />
                       {isCvVisible ? 'Hide CV' : 'View CV'}
                     </button>
-                    {/* Mobile New Tab Button */}
                     <a
-                      href={`${import.meta.env.VITE_CAREERS_API_URL}/cv/${selectedApp._id}`}
+                      href={selectedApp.cvFileUrl || `${import.meta.env.VITE_CAREERS_API_URL}/cv/${selectedApp._id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex lg:hidden items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-full font-mono text-[11px] font-bold tracking-widest uppercase hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20"

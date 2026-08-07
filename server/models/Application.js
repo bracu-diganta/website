@@ -34,6 +34,8 @@ const applicationSchema = new mongoose.Schema({
   skillsOrStrengths: { type: String, required: true },
   relevantExperiences: { type: String, required: true },
   hopeToLearn: { type: String, required: true },
+  cvFileUrl: { type: String, required: false },
+  cvFilename: { type: String, required: false },
   cvFile: {
     data: Buffer,
     contentType: String,

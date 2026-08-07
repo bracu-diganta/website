@@ -32,7 +32,12 @@ app.get('/', (req, res) => res.status(200).send('API is running. Render server i
 // MongoDB Connection
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    // Disable Mongoose internal buffering to reduce memory footprint
+    mongoose.set('bufferCommands', false);
+    await mongoose.connect(process.env.MONGODB_URI, {
+      maxPoolSize: 5,          // Limit connection pool
+      serverSelectionTimeoutMS: 5000,
+    });
     console.log('MongoDB Connected Successfully');
   } catch (error) {
     console.error('MongoDB connection error:', error);
@@ -68,25 +73,14 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-app.post('/api/careers', upload.single('cvFile'), async (req, res) => {
+app.post('/api/careers', async (req, res) => {
   try {
     const data = req.body;
-
-    // Parse array strings coming from FormData
-    if (data.softwareTools && typeof data.softwareTools === 'string') {
-      try { data.softwareTools = JSON.parse(data.softwareTools); } catch (e) {}
-    }
-    if (data.comfortableTasks && typeof data.comfortableTasks === 'string') {
-      try { data.comfortableTasks = JSON.parse(data.comfortableTasks); } catch (e) {}
-    }
-    if (data.technicalSkills && typeof data.technicalSkills === 'string') {
-      try { data.technicalSkills = JSON.parse(data.technicalSkills); } catch (e) {}
-    }
 
     const requiredFields = [
       'universityEmail', 'fullName', 'studentId', 'personalEmail', 'department', 'currentSemester',
       'teamType', 'firstPreference', 'secondPreference', 'whyDiganta', 'aspectsOfInterest',
-      'skillsOrStrengths', 'relevantExperiences', 'hopeToLearn'
+      'skillsOrStrengths', 'relevantExperiences', 'hopeToLearn', 'cvFileUrl', 'cvFilename'
     ];
 
     for (const field of requiredFields) {
@@ -95,21 +89,14 @@ app.post('/api/careers', upload.single('cvFile'), async (req, res) => {
       }
     }
 
-    if (!req.file) {
-      return res.status(400).json({ error: 'CV file is required' });
-    }
-
     const newApplication = new Application({
       ...data,
       softwareTools: data.softwareTools || [],
       comfortableTasks: data.comfortableTasks || [],
       completedCredits: data.completedCredits,
       technicalSkills: data.technicalSkills,
-      cvFile: {
-        data: req.file.buffer,
-        contentType: req.file.mimetype,
-        filename: req.file.originalname
-      }
+      cvFileUrl: data.cvFileUrl,
+      cvFilename: data.cvFilename
     });
 
     await newApplication.save();
@@ -122,7 +109,7 @@ app.post('/api/careers', upload.single('cvFile'), async (req, res) => {
   }
 });
 
-// Route to view CV directly from MongoDB
+// Route to view CV directly from MongoDB (For backward compatibility with old applications)
 app.get('/api/careers/cv/:id', async (req, res) => {
   try {
     const application = await Application.findById(req.params.id);

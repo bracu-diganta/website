@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronRight, Check, ChevronDown, UploadCloud, Clock, AlertCircle, X, FileText } from 'lucide-react';
 import { useToast } from '../ui/ToastProvider';
+import { storage } from '../../config/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const MAX_FILE_SIZE_MB = 2;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -541,23 +543,39 @@ export const CareersPage: React.FC = () => {
         return t;
       });
 
-      const formPayload = new FormData();
+      // Upload CV to Firebase Storage (bypasses the backend server's memory)
+      let cvDownloadUrl = '';
+      let cvFilename = '';
+      if (submitData.cvFile instanceof File) {
+        const file = submitData.cvFile;
+        cvFilename = file.name;
+        const timestamp = Date.now();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storagePath = `cvs/${submitData.studentId || 'unknown'}_${timestamp}_${safeName}`;
+        const storageRef = ref(storage, storagePath);
+        await uploadBytes(storageRef, file);
+        cvDownloadUrl = await getDownloadURL(storageRef);
+      }
+
+      // Build JSON payload (no more FormData with binary — much lighter on the server)
+      const jsonPayload: Record<string, unknown> = {};
       Object.entries(submitData).forEach(([key, value]) => {
-        if (key === 'cvFile' && value instanceof File) {
-          formPayload.append('cvFile', value);
-        } else if (key === 'softwareTools' || key === 'comfortableTasks' || key === 'technicalSkills') {
-          formPayload.append(key, JSON.stringify(value));
-        } else if (value !== null && value !== undefined && key !== 'cvFile') {
-          formPayload.append(key, (value as string).toString());
+        if (key === 'cvFile') return; // skip the File object
+        if (value !== null && value !== undefined) {
+          jsonPayload[key] = value;
         }
       });
+      // Attach the Firebase Storage URL and filename instead of binary
+      jsonPayload.cvFileUrl = cvDownloadUrl;
+      jsonPayload.cvFilename = cvFilename;
 
       const apiUrl = import.meta.env.VITE_CAREERS_API_URL;
 
       if (apiUrl) {
         const response = await fetch(apiUrl, {
           method: 'POST',
-          body: formPayload
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(jsonPayload)
         });
 
         if (!response.ok) {
@@ -652,7 +670,17 @@ export const CareersPage: React.FC = () => {
                 {/* Section B */}
                 <div className="space-y-6 bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
                   <h2 className="font-orbitron text-xl sm:text-2xl font-bold text-slate-900 uppercase tracking-wider bg-slate-100 p-3 sm:p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
-                    <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">B</span> Application Preference
+                    <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">B</span> General Questions
+                  </h2>
+                  <TextAreaField label="Why do you want to join Diganta?" name="whyDiganta" value={formData.whyDiganta} onChange={handleChange} hint="80-120 words" minWords={80} maxWords={120} />
+                  <TextAreaField label="What aspects of the division you selected interest you the most and why?" name="aspectsOfInterest" value={formData.aspectsOfInterest} onChange={handleChange} hint="80-120 words" minWords={80} maxWords={120} />
+                  <TextAreaField label="Are you currently involved in any club, lab or organization? If yes, please mention the organization and your role." name="clubInvolvement" value={formData.clubInvolvement} onChange={handleChange} required={false} rows={2} />
+                </div>
+
+                {/* Section C */}
+                <div className="space-y-6 bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
+                  <h2 className="font-orbitron text-xl sm:text-2xl font-bold text-slate-900 uppercase tracking-wider bg-slate-100 p-3 sm:p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
+                    <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">C</span> Application Preference
                   </h2>
 
                   <div className="flex flex-col gap-2">
@@ -741,16 +769,6 @@ export const CareersPage: React.FC = () => {
                       </div>
                     </div>
                   )}
-                </div>
-
-                {/* Section C */}
-                <div className="space-y-6 bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
-                  <h2 className="font-orbitron text-xl sm:text-2xl font-bold text-slate-900 uppercase tracking-wider bg-slate-100 p-3 sm:p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
-                    <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">C</span> General Questions
-                  </h2>
-                  <TextAreaField label="Why do you want to join Diganta?" name="whyDiganta" value={formData.whyDiganta} onChange={handleChange} hint="80-120 words" minWords={80} maxWords={120} />
-                  <TextAreaField label="What aspects of the division you selected interest you the most and why?" name="aspectsOfInterest" value={formData.aspectsOfInterest} onChange={handleChange} hint="80-120 words" minWords={80} maxWords={120} />
-                  <TextAreaField label="Are you currently involved in any club, lab or organization? If yes, please mention the organization and your role." name="clubInvolvement" value={formData.clubInvolvement} onChange={handleChange} required={false} rows={2} />
                 </div>
 
                 {/* Section D (Technical) */}
