@@ -4,8 +4,15 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import multer from 'multer';
 import Contact from './models/Contact.js';
 import Application from './models/Application.js';
+
+// Multer config: store file in memory (Buffer), max 2 MB
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 }
+});
 
 // Get current directory for dotenv
 const __filename = fileURLToPath(import.meta.url);
@@ -67,14 +74,22 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-app.post('/api/careers', async (req, res) => {
+app.post('/api/careers', upload.single('cvFile'), async (req, res) => {
   try {
-    const data = req.body;
+    const data = { ...req.body };
+
+    // Parse JSON string fields (arrays sent via FormData)
+    const jsonFields = ['softwareTools', 'comfortableTasks', 'technicalSkills', 'technicalSkillsOtherMap'];
+    for (const field of jsonFields) {
+      if (typeof data[field] === 'string') {
+        try { data[field] = JSON.parse(data[field]); } catch { /* keep as string */ }
+      }
+    }
 
     const requiredFields = [
       'universityEmail', 'fullName', 'studentId', 'personalEmail', 'department', 'currentSemester',
       'teamType', 'firstPreference', 'secondPreference', 'whyDiganta', 'aspectsOfInterest',
-      'skillsOrStrengths', 'relevantExperiences', 'hopeToLearn', 'cvFileUrl', 'cvFilename'
+      'skillsOrStrengths', 'relevantExperiences', 'hopeToLearn'
     ];
 
     for (const field of requiredFields) {
@@ -83,16 +98,26 @@ app.post('/api/careers', async (req, res) => {
       }
     }
 
-    const newApplication = new Application({
+    const applicationData = {
       ...data,
       softwareTools: data.softwareTools || [],
       comfortableTasks: data.comfortableTasks || [],
       completedCredits: data.completedCredits,
-      technicalSkills: data.technicalSkills,
-      cvFileUrl: data.cvFileUrl,
-      cvFilename: data.cvFilename
-    });
+      technicalSkills: data.technicalSkills || [],
+      cvFileUrl: data.cvFileUrl || '',
+      cvFilename: data.cvFilename || (req.file ? req.file.originalname : '')
+    };
 
+    // Store CV file directly in MongoDB if uploaded via multer
+    if (req.file) {
+      applicationData.cvFile = {
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+        filename: req.file.originalname
+      };
+    }
+
+    const newApplication = new Application(applicationData);
     await newApplication.save();
     
     console.log('New Recruitment Application Saved!');

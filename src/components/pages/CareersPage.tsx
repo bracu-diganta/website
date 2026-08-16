@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronRight, Check, ChevronDown, UploadCloud, Clock, AlertCircle, X, FileText } from 'lucide-react';
 import { useToast } from '../ui/ToastProvider';
-import { storage } from '../../config/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const MAX_FILE_SIZE_MB = 2;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -543,57 +541,34 @@ export const CareersPage: React.FC = () => {
         return t;
       });
 
-      // Upload CV to Firebase Storage (bypasses the backend server's memory)
-      let cvDownloadUrl = '';
-      let cvFilename = '';
-      if (submitData.cvFile instanceof File) {
-        const file = submitData.cvFile;
-        cvFilename = file.name;
-        const timestamp = Date.now();
-        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-        const storagePath = `cvs/${submitData.studentId || 'unknown'}_${timestamp}_${safeName}`;
-        const storageRef = ref(storage, storagePath);
+      // Build FormData payload with CV file included
+      const formPayload = new FormData();
 
-        // Timeout wrapper to prevent hanging forever if Firebase Storage is unreachable
-        const uploadWithTimeout = (timeoutMs: number) => {
-          return Promise.race([
-            (async () => {
-              await uploadBytes(storageRef, file);
-              return await getDownloadURL(storageRef);
-            })(),
-            new Promise<never>((_, reject) =>
-              setTimeout(() => reject(new Error('CV upload timed out after 30 seconds. Please try again.')), timeoutMs)
-            )
-          ]);
-        };
-
-        try {
-          cvDownloadUrl = await uploadWithTimeout(30000);
-        } catch (uploadError) {
-          console.error('Firebase Storage upload failed:', uploadError);
-          throw new Error('Failed to upload CV. Please check your file and try again.');
-        }
-      }
-
-      // Build JSON payload (no more FormData with binary — much lighter on the server)
-      const jsonPayload: Record<string, unknown> = {};
       Object.entries(submitData).forEach(([key, value]) => {
-        if (key === 'cvFile') return; // skip the File object
+        if (key === 'cvFile') return; // handled separately below
         if (value !== null && value !== undefined) {
-          jsonPayload[key] = value;
+          if (Array.isArray(value)) {
+            formPayload.append(key, JSON.stringify(value));
+          } else if (typeof value === 'object') {
+            formPayload.append(key, JSON.stringify(value));
+          } else {
+            formPayload.append(key, String(value));
+          }
         }
       });
-      // Attach the Firebase Storage URL and filename instead of binary
-      jsonPayload.cvFileUrl = cvDownloadUrl;
-      jsonPayload.cvFilename = cvFilename;
+
+      // Attach the CV file directly
+      if (submitData.cvFile instanceof File) {
+        formPayload.append('cvFile', submitData.cvFile);
+        formPayload.append('cvFilename', submitData.cvFile.name);
+      }
 
       const apiUrl = import.meta.env.VITE_CAREERS_API_URL;
 
       if (apiUrl) {
         const response = await fetch(apiUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(jsonPayload)
+          body: formPayload  // No Content-Type header — browser sets it with boundary
         });
 
         if (!response.ok) {
