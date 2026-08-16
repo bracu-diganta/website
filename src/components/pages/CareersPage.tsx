@@ -553,8 +553,26 @@ export const CareersPage: React.FC = () => {
         const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
         const storagePath = `cvs/${submitData.studentId || 'unknown'}_${timestamp}_${safeName}`;
         const storageRef = ref(storage, storagePath);
-        await uploadBytes(storageRef, file);
-        cvDownloadUrl = await getDownloadURL(storageRef);
+
+        // Timeout wrapper to prevent hanging forever if Firebase Storage is unreachable
+        const uploadWithTimeout = (timeoutMs: number) => {
+          return Promise.race([
+            (async () => {
+              await uploadBytes(storageRef, file);
+              return await getDownloadURL(storageRef);
+            })(),
+            new Promise<never>((_, reject) =>
+              setTimeout(() => reject(new Error('CV upload timed out after 30 seconds. Please try again.')), timeoutMs)
+            )
+          ]);
+        };
+
+        try {
+          cvDownloadUrl = await uploadWithTimeout(30000);
+        } catch (uploadError) {
+          console.error('Firebase Storage upload failed:', uploadError);
+          throw new Error('Failed to upload CV. Please check your file and try again.');
+        }
       }
 
       // Build JSON payload (no more FormData with binary — much lighter on the server)
@@ -597,8 +615,10 @@ export const CareersPage: React.FC = () => {
       }, 4000);
 
     } catch (error) {
+      console.error('Application submission error:', error);
+      const message = error instanceof Error ? error.message : 'Critical Error: Transmission Failed!';
       setFormStatus('error');
-      showToast('Critical Error: Transmission Failed!', 'error');
+      showToast(message, 'error');
       setTimeout(() => setFormStatus('idle'), 4000);
     }
   };
