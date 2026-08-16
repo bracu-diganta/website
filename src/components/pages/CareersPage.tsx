@@ -103,7 +103,7 @@ const SEMESTERS = [
 ];
 
 // Recruitment deadline — change this date to control the countdown
-const RECRUITMENT_DEADLINE = new Date('2026-08-15T23:59:59+06:00');
+const RECRUITMENT_DEADLINE = new Date('2026-08-30T23:59:59+06:00');
 
 
 interface InputFieldProps {
