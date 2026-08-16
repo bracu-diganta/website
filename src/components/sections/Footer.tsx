@@ -1,9 +1,7 @@
 import React, { useRef } from 'react';
-import * as Icons from 'lucide-react';
-import { ArrowUp, ArrowUpRight, Send, MapPin } from 'lucide-react';
+import { ArrowUp, ArrowUpRight, Send, MapPin, Activity } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MouseCrosshair } from '../ui/MouseCrosshair';
-import { sponsorsData } from '../../data/sponsors';
 
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -75,7 +73,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 mb-16">
 
           {/* Main Hero Bento (Left) */}
-          <div className="lg:col-span-5 bg-white rounded-3xl p-8 md:p-12 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500">
+          <div className="lg:col-span-5 bg-white rounded-3xl p-8 md:p-12 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-center group hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-full font-mono text-[10px] tracking-widest font-bold uppercase mb-8">
                 <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
@@ -92,57 +90,43 @@ export const Footer: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex flex-col gap-6 w-full mt-8">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (!isHomePage) {
-                    navigate('/');
-                    setTimeout(() => {
-                      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                  } else {
-                    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                className="group/btn relative w-full overflow-hidden rounded-2xl px-6 py-5 shadow-xl transition-all hover:scale-[1.02] animate-bulb"
-              >
-                <div className="relative z-10 flex items-center justify-between font-mono text-xs font-bold uppercase tracking-widest">
-                  Become a Sponsor
-                  <ArrowUpRight className="h-5 w-5 transition-transform group-hover/btn:-translate-y-1 group-hover/btn:translate-x-1" />
+            {/* Live Telemetry Status */}
+            <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col gap-3 w-full max-w-sm">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] font-bold text-slate-400 tracking-widest uppercase flex items-center gap-2">
+                  <Activity size={12} /> Network Status
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span className="font-mono text-[10px] font-bold text-emerald-500 tracking-widest uppercase">
+                    Online
+                  </span>
                 </div>
-              </button>
-
-              {/* Animated Sponsor Marquee inside the bento */}
-              <div className="w-full relative py-3 z-30 overflow-hidden">
-                <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-                <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-
-                <div className="flex w-max animate-[marquee_20s_linear_infinite]">
-                  {[1, 2].map((set) => (
-                    <div key={set} className="flex items-center gap-8 px-4 shrink-0">
-                      {sponsorsData.slice(0, 5).map((sponsor, idx) => {
-                        const Icon = Icons[sponsor.iconName as keyof typeof Icons] as React.ElementType || Icons.Globe;
-                        return (
-                          <div key={idx} className="flex items-center gap-2">
-                            {sponsor.logoUrl ? (
-                              <img src={sponsor.logoUrl} alt={sponsor.name} className="h-10 w-auto max-w-[100px] lg:max-w-[140px] object-contain mix-blend-multiply" />
-                            ) : (
-                              <>
-                                <div className="w-6 h-6 flex items-center justify-center text-slate-500 shadow-sm">
-                                  <Icon size={16} />
-                                </div>
-                                <span className="font-orbitron font-black text-[10px] tracking-widest uppercase text-slate-500">{sponsor.name}</span>
-                              </>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+              </div>
+              
+              <div className="bg-slate-50/80 border border-slate-100 rounded-xl p-4 flex items-center justify-between group/telemetry cursor-default">
+                <div className="flex flex-col gap-1">
+                  <span className="font-mono text-[9px] text-slate-400 uppercase tracking-widest">Base Coordinates</span>
+                  <span className="font-mono text-xs font-bold text-slate-700 tracking-wider">23.7801° N, 90.4072° E</span>
+                </div>
+                <div className="flex gap-1 h-6 items-end opacity-40 group-hover/telemetry:opacity-100 transition-opacity">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div 
+                      key={i} 
+                      className="w-1 bg-blue-500 rounded-full animate-pulse" 
+                      style={{ 
+                        height: `${Math.random() * 60 + 40}%`,
+                        animationDelay: `${i * 0.15}s` 
+                      }} 
+                    />
                   ))}
                 </div>
               </div>
             </div>
+
           </div>
 
           {/* Right Column (Stacked Bentos) */}
@@ -165,7 +149,7 @@ export const Footer: React.FC = () => {
                   <input
                     type="email"
                     placeholder="ENTER EMAIL ADDRESS"
-                    className="w-full shrink-0 bg-slate-50 sm:bg-transparent border border-slate-200 sm:border-transparent rounded-xl outline-none px-5 py-4 font-mono text-xs text-slate-900 placeholder:text-slate-400 font-bold tracking-wider focus:bg-white focus:border-blue-500 transition-all z-10"
+                    className="w-full sm:flex-1 bg-slate-50 sm:bg-transparent border border-slate-200 sm:border-transparent rounded-xl outline-none px-5 py-4 font-mono text-xs text-slate-900 placeholder:text-slate-400 font-bold tracking-wider focus:bg-white focus:border-blue-500 transition-all z-10"
                   />
                   <button className="w-full shrink-0 sm:w-auto flex justify-center items-center bg-blue-600 hover:bg-slate-900 text-white rounded-xl px-8 py-4 font-mono text-[11px] tracking-widest font-bold uppercase transition-all gap-2 shadow-lg shadow-blue-600/20 sm:shadow-none z-10">
                     <Send size={14} /> Send

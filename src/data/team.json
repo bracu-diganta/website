@@ -50,7 +50,7 @@
     "teamLeads": [
       {
         "name": "Hasna Hena Jui",
-        "role": "PM",
+        "role": "Project Manager",
         "image": "https://i.ibb.co.com/21v7tRX8/att-oq69-Mv-W0-Ob-tk-Wj-Zb-Hf-WXkd4-L7-JK56-H1-NME0-Krjp-4-Jui-Hena.jpg",
         "linkedin": "https://www.linkedin.com/in/hasna-hena-jui-8561a32aa?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
         "facebook": "https://www.facebook.com/share/1CWATNKRUm/?mibextid=wwXIfr",
@@ -81,17 +81,17 @@
         "linkedin": "https://www.linkedin.com/in/md-sybeen-abrar-prohor-241aa3241?utm_source=share_via&utm_content=profile&utm_medium=member_android",
         "facebook": "https://www.facebook.com/share/1Cx9rw72Da/",
         "quote": ""
-      },
+      }
+    ],
+    "teamMembers": [
       {
         "name": "Md Shafinur Islam",
-        "role": "Mechanical Lead",
+        "role": "Mechanical Team Member",
         "image": "https://i.ibb.co.com/d0kdFptR/Messenger-creation-F6-E4-B605-0193-49-B5-AC65-DABDD3189578-MD-SHAFINUR-ISLAM.jpg",
         "linkedin": "https://www.linkedin.com/in/md-shafinur-islam-82992037b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
         "facebook": "https://www.facebook.com/share/1DA1397byq/",
         "quote": ""
-      }
-    ],
-    "teamMembers": [
+      },
       {
         "name": "Zakwan Bin Arif",
         "role": "Flight-Software",

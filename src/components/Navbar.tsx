@@ -43,7 +43,7 @@ export const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isHomePage = location.pathname === '/';
-  
+
   const [scrolled, setScrolled] = useState(!isHomePage);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeHash, setActiveHash] = useState<string>('');
@@ -216,10 +216,10 @@ export const Navbar: React.FC = () => {
             className="cursor-pointer flex items-center shrink-0 transition-all duration-700"
             onClick={scrollToTop}
           >
-            <img 
-              src={`${import.meta.env.BASE_URL}Diganta%20Logo.png`} 
-              alt="BRACU Diganta Logo" 
-              className={`object-contain transition-all duration-500 ${scrolled ? 'h-10' : 'h-16'}`} 
+            <img
+              src={`${import.meta.env.BASE_URL}Diganta%20Logo.png`}
+              alt="BRACU Diganta Logo"
+              className={`object-contain transition-all duration-500 ${scrolled ? 'h-10' : 'h-16'}`}
             />
           </div>
         </div>
@@ -228,7 +228,7 @@ export const Navbar: React.FC = () => {
         <div
           ref={dockRef}
           onMouseLeave={handleLinkLeave}
-          className={`pointer-events-auto hidden lg:flex items-center gap-1 transition-all duration-700 rounded-full p-1.5 relative opacity-100 translate-y-0 ${scrolled
+          className={`pointer-events-auto hidden lg:flex items-center gap-1 transition-all duration-700 rounded-full p-1.5 absolute left-1/2 -translate-x-1/2 opacity-100 translate-y-0 ${scrolled
             ? 'bg-white/30 backdrop-blur-2xl backdrop-saturate-[2.0] border border-white/50 shadow-[0_8px_32px_rgba(37,99,235,0.15)]'
             : 'bg-transparent border-transparent'
             }`}
@@ -247,36 +247,35 @@ export const Navbar: React.FC = () => {
           {navLinks.map((link) => {
             const active = isLinkActive(link);
             return (
-            <a
-              key={link.label}
-              href={link.type === 'route' ? link.target : `#${link.target}`}
-              onClick={(e) => handleLinkClick(e, link)}
-              onMouseEnter={handleLinkHover}
-              className={`group relative px-6 py-2.5 text-[11px] font-mono font-bold transition-colors duration-300 tracking-[0.15em] uppercase rounded-full overflow-hidden ${
-                scrolled 
+              <a
+                key={link.label}
+                href={link.type === 'route' ? link.target : `#${link.target}`}
+                onClick={(e) => handleLinkClick(e, link)}
+                onMouseEnter={handleLinkHover}
+                className={`group relative px-6 py-2.5 text-xs xl:text-[13px] font-mono font-bold transition-colors duration-300 tracking-[0.15em] uppercase rounded-full overflow-hidden ${scrolled
                   ? active ? 'text-[#2563EB]' : 'text-gray-700 hover:text-[#2563EB]'
                   : active ? 'text-[#2563EB]' : 'text-gray-900 hover:text-[#2563EB]'
-              }`}
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                <span className={`w-1.5 h-1.5 rounded-full bg-[#2563EB] transition-all duration-300 ${
-                  active ? 'opacity-100 scale-100' : 'opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100'
-                }`} />
-                {link.label}
-              </span>
-            </a>
-          )})}
+                  }`}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full bg-[#2563EB] transition-all duration-300 ${active ? 'opacity-100 scale-100' : 'opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100'
+                    }`} />
+                  {link.label}
+                </span>
+              </a>
+            )
+          })}
         </div>
 
-        {/* 3. CTA PILL */}
-        <div className="pointer-events-auto hidden lg:block transition-all duration-700 opacity-100 translate-y-0">
+        {/* 3. CTA PILLS */}
+        <div className="pointer-events-auto hidden lg:flex flex-col items-end gap-3 transition-all duration-700 opacity-100 translate-y-0">
           <div
             ref={ctaMagnetic.ref}
             onMouseMove={ctaMagnetic.handleMouseMove}
             onMouseLeave={ctaMagnetic.handleMouseLeave}
           >
             <button
-              className="relative overflow-hidden group bg-[#2563EB] text-white rounded-full px-8 py-3 text-[11px] font-mono font-bold tracking-[0.2em] uppercase transition-all duration-300 hover:bg-blue-700 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] flex items-center gap-3"
+              className="relative overflow-hidden group bg-[#2563EB] text-white rounded-full px-8 py-3 text-xs xl:text-[13px] font-mono font-bold tracking-[0.2em] uppercase transition-all duration-300 hover:bg-blue-700 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] flex items-center gap-3"
               onClick={(e) => {
                 e.preventDefault();
                 if (!isHomePage) {
@@ -296,6 +295,20 @@ export const Navbar: React.FC = () => {
               </span>
             </button>
           </div>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/careers');
+            }}
+            className="group bg-[#10B981] text-white rounded-full px-7 py-2.5 text-xs xl:text-[13px] font-mono font-black tracking-[0.2em] uppercase transition-all duration-300 hover:bg-[#059669] hover:scale-105 shadow-[0_10px_20px_rgba(16,185,129,0.5)] flex items-center justify-center gap-3 w-full"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+            </span>
+            Join Us
+          </button>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -419,24 +432,22 @@ export const Navbar: React.FC = () => {
           {navLinks.map((link, idx) => {
             const active = isLinkActive(link);
             return (
-            <a
-              key={link.label}
-              href={link.type === 'route' ? link.target : `#${link.target}`}
-              onClick={(e) => handleLinkClick(e, link)}
-              className={`relative flex items-center gap-4 text-3xl font-mono font-bold hover:text-gray-900 transition-all duration-500 group ${
-                mobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-16'
-              } ${active ? 'text-gray-900' : 'text-gray-400'}`}
-              style={{ transitionDelay: `${(idx + 2) * 100}ms` }}
-            >
-              <span className={`text-[#2563EB] text-xl transition-all font-mono tracking-widest ${
-                active ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0'
-              }`}>[</span>
-              {link.label.toUpperCase()}
-              <span className={`text-[#2563EB] text-xl transition-all font-mono tracking-widest ${
-                active ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0'
-              }`}>]</span>
-            </a>
-          )})}
+              <a
+                key={link.label}
+                href={link.type === 'route' ? link.target : `#${link.target}`}
+                onClick={(e) => handleLinkClick(e, link)}
+                className={`relative flex items-center gap-4 text-3xl font-mono font-bold hover:text-gray-900 transition-all duration-500 group ${mobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-16'
+                  } ${active ? 'text-gray-900' : 'text-gray-400'}`}
+                style={{ transitionDelay: `${(idx + 2) * 100}ms` }}
+              >
+                <span className={`text-[#2563EB] text-xl transition-all font-mono tracking-widest ${active ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0'
+                  }`}>[</span>
+                {link.label.toUpperCase()}
+                <span className={`text-[#2563EB] text-xl transition-all font-mono tracking-widest ${active ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0'
+                  }`}>]</span>
+              </a>
+            )
+          })}
 
           <div
             className={`mt-8 md:mt-12 flex flex-col gap-4 w-full transition-all duration-500 ${mobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-16'
@@ -471,11 +482,14 @@ export const Navbar: React.FC = () => {
                 setMobileMenuOpen(false);
                 navigate('/careers');
               }}
-              className="relative overflow-hidden group bg-[#2563EB] text-white hover:bg-blue-700 px-8 py-4 w-full max-w-[280px] text-xs font-mono tracking-[0.2em] uppercase transition-all duration-300 shadow-[0_0_20px_rgba(37,99,235,0.3)]"
+              className="relative overflow-hidden group bg-[#10B981] text-white hover:bg-[#059669] px-8 py-4 w-full max-w-[280px] text-xs font-mono font-bold tracking-[0.2em] uppercase transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
             >
               <span className="relative z-10 flex items-center justify-center gap-3">
-                <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                JOIN OUR TEAM
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+                Join Us
               </span>
             </button>
           </div>
