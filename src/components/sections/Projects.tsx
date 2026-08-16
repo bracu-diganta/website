@@ -57,19 +57,23 @@ export const Projects: React.FC = () => {
   }, [activeIndex]);
 
   return (
-    <section id="projects" ref={sectionRef} className="pt-28 pb-12 md:pt-32 md:pb-24 relative z-10 bg-[#eef2f5]">
-      <div className="max-w-7xl mx-auto px-6 md:px-8">
+    <section id="projects" ref={sectionRef} className="py-24 md:py-32 relative z-10 bg-[#eef2f5]">
+      <div className="max-w-[90rem] mx-auto px-4 md:px-8">
 
         {/* Header */}
-        <div className="archive-header flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-12 gap-4 md:gap-8">
-          <div>
-            {/* "02 // Mission Archive" label removed per user request */}
-            <h2 className="font-orbitron text-3xl md:text-5xl lg:text-6xl font-black text-gray-900 tracking-tighter uppercase leading-none">
-              Project <br /> Showcase
+        <div className="archive-header flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-4 md:gap-8">
+          <div className="mb-4 md:mb-0">
+            <div className="flex gap-1 mb-4">
+              <div className="w-2 h-2 bg-blue-600" />
+              <div className="w-2 h-2 bg-blue-400" />
+              <div className="w-2 h-2 bg-blue-200" />
+            </div>
+            <h2 className="font-orbitron text-4xl md:text-6xl font-black tracking-widest uppercase drop-shadow-sm mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-cyan-500">
+              Project Showcase
             </h2>
           </div>
 
-          <MagneticButton 
+          <MagneticButton
             className="hidden md:flex items-center gap-3 bg-gray-900 text-white hover:bg-gray-800 px-8 py-4 rounded-full text-sm font-semibold transition-all"
             onClick={() => { navigate('/missions'); window.scrollTo(0, 0); }}
           >

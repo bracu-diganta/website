@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight } from 'lucide-react';
@@ -13,9 +13,24 @@ const TOTAL_SLIDES = VISIBLE_COUNT + 1; // 4 cards + 1 CTA
 export const Achievements: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollWrapperRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const [ctaInView, setCtaInView] = useState(false);
   const navigate = useNavigate();
 
   const visibleItems = NEWS_UPDATES.slice(0, VISIBLE_COUNT);
+
+  // Detect when the CTA card enters the viewport on mobile
+  useEffect(() => {
+    const el = ctaRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setCtaInView(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current || !scrollWrapperRef.current) return;
@@ -49,22 +64,31 @@ export const Achievements: React.FC = () => {
     <section
       id="achievements"
       ref={containerRef}
-      className="relative bg-[#f8fafc] min-h-screen md:h-screen md:overflow-hidden block md:flex md:items-center pt-24 md:pt-0"
+      className="relative z-10 bg-[#f8fafc] min-h-screen md:h-screen md:overflow-hidden block md:flex md:items-center pt-24 pb-0 md:py-0"
     >
       {/* High-End Background Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none opacity-50" />
 
-      {/* Floating Global Header (Stays Fixed) */}
-      <div className="sticky top-20 md:absolute md:top-16 left-0 md:left-16 z-0 md:z-50 pointer-events-none pl-6 md:pl-0 pb-4 md:pb-0 mb-4 md:mb-0">
-        <h2 className="font-orbitron text-3xl md:text-4xl font-black text-slate-900 tracking-widest uppercase md:bg-transparent bg-white/50 backdrop-blur-md inline-block px-4 py-2 -ml-4 md:ml-0 md:p-0 md:backdrop-blur-none rounded-r-xl md:rounded-none">
-          Timeline
-        </h2>
+      {/* Floating Global Header (Stays Fixed on Desktop, Sticky on Mobile — fades out when CTA appears) */}
+      <div className={`sticky top-6 md:absolute md:top-0 md:left-0 w-full z-20 md:z-50 pointer-events-none md:pt-32 transition-all duration-500 ${ctaInView ? 'opacity-0 -translate-y-8 md:opacity-100 md:translate-y-0' : 'opacity-100 translate-y-0'}`}>
+        <div className="max-w-[90rem] mx-auto px-4 md:px-8">
+          <div className="mb-12 md:mb-0 pointer-events-auto w-fit">
+            <div className="flex gap-1 mb-4">
+              <div className="w-2 h-2 bg-blue-600" />
+              <div className="w-2 h-2 bg-blue-400" />
+              <div className="w-2 h-2 bg-blue-200" />
+            </div>
+            <h2 className="font-orbitron text-4xl md:text-6xl font-black tracking-widest uppercase drop-shadow-sm mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-cyan-500">
+              Timeline
+            </h2>
+          </div>
+        </div>
       </div>
 
       <div
         ref={scrollWrapperRef}
         data-scroll-track=""
-        className="flex flex-col md:flex-row h-auto md:h-full w-full will-change-transform md:pb-0 relative shrink-0"
+        className="flex flex-col md:flex-row h-auto md:h-full w-full will-change-transform md:pb-0 relative shrink-0 md:pt-48 lg:pt-56"
         style={{ ['--tw-slides' as string]: TOTAL_SLIDES }}
       >
         {/* Inject responsive width via <style> since we need a media-query-scoped dynamic value */}
@@ -75,8 +99,8 @@ export const Achievements: React.FC = () => {
         `}</style>
 
         {visibleItems.map((item, index) => (
-          <div 
-            key={item.id} 
+          <div
+            key={item.id}
             className="h-slide shrink-0 w-full md:w-screen h-auto md:h-full flex flex-col md:flex-row items-center justify-center py-8 px-6 md:p-24 relative min-h-[85vh] md:min-h-0 bg-white md:bg-transparent rounded-t-[2.5rem] md:rounded-none shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:shadow-none border-t border-slate-200 md:border-none sticky md:static z-10 overflow-hidden"
             style={{ top: `calc(130px + ${index * 16}px)` }}
           >
@@ -155,7 +179,8 @@ export const Achievements: React.FC = () => {
 
         {/* See More CTA Slide */}
         <div
-          className="h-slide w-full md:w-[40vw] h-auto md:h-full flex items-center justify-center py-8 px-6 md:p-12 relative min-h-[30vh] md:min-h-0 bg-white md:bg-transparent rounded-t-[2.5rem] md:rounded-none shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:shadow-none border-t border-slate-200 md:border-none sticky md:static z-10 shrink-0"
+          ref={ctaRef}
+          className="h-slide w-full md:w-[40vw] h-auto md:h-full flex items-center justify-center py-8 px-6 md:p-12 relative min-h-[calc(100vh-190px)] md:min-h-0 bg-white md:bg-transparent rounded-t-[2.5rem] md:rounded-none shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:shadow-none border-t border-slate-200 md:border-none sticky md:static z-10 shrink-0"
           style={{ top: `calc(130px + ${VISIBLE_COUNT * 16}px)` }}
         >
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-orbitron text-[40vw] font-black text-slate-900/[0.02] pointer-events-none z-0 leading-none select-none">

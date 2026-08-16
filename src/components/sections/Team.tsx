@@ -21,133 +21,143 @@ interface CrewCardProps {
 const CrewCard = ({ member, layout, onClick }: CrewCardProps) => {
 
   return (
-  <div onClick={onClick} className={`crew-card ${layout.col} ${layout.height} absolute inset-0 w-full md:relative md:inset-auto md:w-auto group cursor-pointer`}>
-    
-    {/* Image / Main Card Container (shrinks slightly on mobile to leave space below, but stays large) */}
-    <div className="relative w-full h-[480px] md:h-full">
-      {/* Border Wrapper (creates a 1px border that perfectly follows the clip-path) */}
-      <div 
-        className="absolute inset-0 bg-blue-200 group-hover:bg-blue-400 transition-colors duration-500 z-0"
-        style={{ clipPath: sciFiClip }}
-      />
-      
-      {/* Inner Content Container */}
-      <div 
-        className="absolute inset-[1px] bg-white z-10 overflow-hidden"
-        style={{ clipPath: sciFiClip }}
-      >
-        {/* Background Image */}
-        <img 
-          src={member.image} 
-          alt={member.name}
-          className="absolute inset-0 w-full h-full object-cover object-center grayscale opacity-80 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700 ease-out"
+    <div onClick={onClick} className={`crew-card ${layout.col} ${layout.height} absolute inset-0 w-full md:relative md:inset-auto md:w-auto group cursor-pointer`}>
+
+      {/* Image / Main Card Container (shrinks slightly on mobile to leave space below, but stays large) */}
+      <div className="relative w-full h-[480px] md:h-full">
+        {/* Border Wrapper (creates a 1px border that perfectly follows the clip-path) */}
+        <div
+          className="absolute inset-0 bg-blue-200 group-hover:bg-blue-400 transition-colors duration-500 z-0"
+          style={{ clipPath: sciFiClip }}
         />
-        
-        {/* Gradient Overlay for Text Readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none transition-all duration-500 group-hover:from-black/70 group-hover:via-black/30" />
+
+        {/* Inner Content Container */}
+        <div
+          className="absolute inset-[1px] bg-white z-10 overflow-hidden"
+          style={{ clipPath: sciFiClip }}
+        >
+          {/* Background Image */}
+          <img
+            src={member.image}
+            alt={member.name}
+            className="absolute inset-0 w-full h-full object-cover object-center grayscale opacity-80 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700 ease-out"
+          />
+
+          {/* Gradient Overlay for Text Readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none transition-all duration-500 group-hover:from-black/70 group-hover:via-black/30" />
 
 
 
-        {/* Top Right Tech Detail Icon */}
-        <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-          <ArrowUpRight className="w-5 h-5 text-white drop-shadow-sm" />
-        </div>
+          {/* Top Right Tech Detail Icon */}
+          <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+            <ArrowUpRight className="w-5 h-5 text-white drop-shadow-sm" />
+          </div>
 
-        {/* Bottom Content Area */}
-        <div className="absolute bottom-0 left-0 w-full p-6 z-20 flex flex-col justify-end transition-all duration-300 transform group-hover:-translate-y-2">
-          <span className="block font-mono text-[10px] md:text-xs text-blue-300 font-bold tracking-[0.2em] uppercase mb-1">
-            {member.role || 'CREW MEMBER'}
-          </span>
-          <h3 className="font-orbitron font-black text-2xl md:text-3xl text-white uppercase tracking-wider mb-2 group-hover:text-blue-400 transition-colors">
-            {member.name}
-          </h3>
-          <div className="flex items-center gap-3 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            {member.linkedin && member.linkedin !== "N/A" && member.linkedin !== "" && (
-              <a 
-                href={member.linkedin.startsWith('http') ? member.linkedin : `https://${member.linkedin}`} 
-                target="_blank" 
-                rel="noreferrer" 
-                onClick={(e) => e.stopPropagation()}
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect width="4" height="12" x="2" y="9" /><circle cx="4" cy="4" r="2" /></svg>
-              </a>
-            )}
-            {member.facebook && member.facebook !== "N/A" && member.facebook !== "" && (
-              <a 
-                href={member.facebook.startsWith('http') ? member.facebook : `https://${member.facebook}`} 
-                target="_blank" 
-                rel="noreferrer" 
-                onClick={(e) => e.stopPropagation()}
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
-              </a>
-            )}
+          {/* Bottom Content Area */}
+          <div className="absolute bottom-0 left-0 w-full p-6 z-20 flex flex-col justify-end transition-all duration-300 transform group-hover:-translate-y-2">
+            <span className="block font-mono text-[10px] md:text-xs text-blue-300 font-bold tracking-[0.2em] uppercase mb-1">
+              {member.role || 'CREW MEMBER'}
+            </span>
+            <h3 className="font-orbitron font-black text-2xl md:text-3xl text-white uppercase tracking-wider mb-2 group-hover:text-blue-400 transition-colors">
+              {member.name}
+            </h3>
+            <div className="flex items-center gap-3 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              {member.linkedin && member.linkedin !== "N/A" && member.linkedin !== "" && (
+                <a
+                  href={member.linkedin.startsWith('http') ? member.linkedin : `https://${member.linkedin}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect width="4" height="12" x="2" y="9" /><circle cx="4" cy="4" r="2" /></svg>
+                </a>
+              )}
+              {member.facebook && member.facebook !== "N/A" && member.facebook !== "" && (
+                <a
+                  href={member.facebook.startsWith('http') ? member.facebook : `https://${member.facebook}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    {/* Mobile Only: Quote Area utilizing the bottom space */}
-    <div className="absolute top-[500px] left-0 w-full md:hidden flex flex-col justify-start items-center px-6 text-center z-10">
-      {member.quote ? (
-        <>
-          <span className="text-[#2563EB] text-6xl font-serif leading-none mb-2 opacity-30">"</span>
-          <p className="font-serif text-lg md:text-xl text-slate-700 italic leading-relaxed">
-            {member.quote}
-          </p>
-        </>
-      ) : null}
-    </div>
+      {/* Mobile Only: Quote Area utilizing the bottom space */}
+      <div className="absolute top-[500px] left-0 w-full md:hidden flex flex-col justify-start items-center px-6 text-center z-10">
+        {member.quote ? (
+          <>
+            <span className="text-[#2563EB] text-6xl font-serif leading-none mb-2 opacity-30">"</span>
+            <p className="font-serif text-lg md:text-xl text-slate-700 italic leading-relaxed">
+              {member.quote}
+            </p>
+          </>
+        ) : null}
+      </div>
 
-  </div>
-)};
+    </div>
+  )
+};
 
 export const Team: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [selectedMember, setSelectedMember] = useState<TeamMemberType | null>(null);
-  
+
   // Get 2026 data for the home page showcase
   const currentYearData = teamData.find(d => d.year === '2026') || teamData[0];
-  
+
   // Reconstruct a subset of crew for the Home page bento grid
-  const crewData = [
+  const fullCrewData = [
     ...currentYearData.supervisors,
     ...currentYearData.advisors,
     ...(currentYearData.management || []),
     ...currentYearData.teamLeads,
     ...currentYearData.subTeamLeads,
     ...currentYearData.teamMembers
-  ].slice(0, 7);
-
-  // Original Bento Layout Maps
-  const bentoLayouts = [
-    { col: "col-span-12 md:col-span-8", height: "h-full md:h-[400px]" },
-    { col: "col-span-12 md:col-span-4", height: "h-full md:h-[400px]" },
-    { col: "col-span-12 md:col-span-4", height: "h-full md:h-[300px]" },
-    { col: "col-span-12 md:col-span-4", height: "h-full md:h-[300px]" },
-    { col: "col-span-12 md:col-span-4", height: "h-full md:h-[300px]" },
-    { col: "col-span-12 md:col-span-4", height: "h-full md:h-[350px]" },
-    { col: "col-span-12 md:col-span-8", height: "h-full md:h-[350px]" },
   ];
+
+  const kaushikIndex = fullCrewData.findIndex(m => m.name.includes('Kaushik'));
+  const chironjeetIndex = fullCrewData.findIndex(m => m.name.includes('Chironjeet'));
+
+  if (kaushikIndex !== -1 && chironjeetIndex !== -1) {
+    const temp = fullCrewData[kaushikIndex];
+    fullCrewData[kaushikIndex] = fullCrewData[chironjeetIndex];
+    fullCrewData[chironjeetIndex] = temp;
+  }
+
+  const crewData = fullCrewData.slice(0, 7);
+
+  // Uniform Layout for all crew members
+  const uniformLayout = {
+    col: "col-span-12 sm:col-span-6 lg:col-span-3",
+    height: "h-[450px] md:h-[400px]"
+  };
+
+  // Create an array of the same layout to match the original map logic
+  const bentoLayouts = Array(7).fill(uniformLayout);
 
   useEffect(() => {
     if (!sectionRef.current) return;
-    
+
     const ctx = gsap.context(() => {
       let mm = gsap.matchMedia();
 
       // Desktop: Elegant staggered reveal
       mm.add("(min-width: 768px)", () => {
-        gsap.fromTo('.crew-card', 
+        gsap.fromTo('.crew-card',
           { opacity: 0, y: 100, scale: 0.95 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            scale: 1, 
-            duration: 1, 
-            stagger: 0.1, 
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1,
+            stagger: 0.1,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: sectionRef.current,
@@ -160,7 +170,7 @@ export const Team: React.FC = () => {
       // Mobile: Pinned Swap Animation
       mm.add("(max-width: 767px)", () => {
         const cards = gsap.utils.toArray('.crew-card') as HTMLElement[];
-        
+
         // Initial setup for the stack
         cards.forEach((card, i) => {
           if (i === 0) {
@@ -174,9 +184,9 @@ export const Team: React.FC = () => {
         // Pinned container timeline
         const tl = gsap.timeline({
           scrollTrigger: {
-            trigger: '.crew-grid-container',
-            start: 'top 20%', // Pin slightly below the header
-            end: `+=${cards.length * 80}%`, // Scroll distance proportional to cards
+            trigger: '.crew-pin-wrapper',
+            start: 'top 10%',
+            end: `+=${cards.length * 80}%`,
             pin: true,
             scrub: 1,
           }
@@ -220,52 +230,52 @@ export const Team: React.FC = () => {
 
   return (
     <section id="team" ref={sectionRef} className="bg-slate-50 min-h-screen py-32 relative overflow-hidden">
-      
+
       {/* Background Texture */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] mix-blend-multiply" />
       </div>
-      
+
       {/* Massive Background Watermark */}
       <div className="absolute top-0 right-0 p-8 pointer-events-none opacity-[0.03] z-0">
         <h1 className="font-orbitron font-black text-[12vw] text-slate-900 tracking-tighter leading-none text-right">
-          MISSION<br/>ROSTER
+          MISSION<br />ROSTER
         </h1>
       </div>
 
-      <div className="relative max-w-[90rem] mx-auto px-6 md:px-8 z-10">
-        
-        {/* Section Header */}
-        <div className="mb-16">
-          <div className="flex gap-1 mb-4">
-            <div className="w-2 h-2 bg-blue-600" />
-            <div className="w-2 h-2 bg-blue-400" />
-            <div className="w-2 h-2 bg-blue-200" />
-          </div>
-          <h2 className="font-orbitron text-4xl md:text-6xl text-slate-900 font-black tracking-widest uppercase drop-shadow-sm mb-2">
-            Command Crew
-          </h2>
-          <p className="font-mono text-sm md:text-base text-slate-500 uppercase tracking-widest">
-            // Active Personnel Deployment ({currentYearData.year})
-          </p>
-        </div>
+      <div className="relative max-w-[90rem] mx-auto px-4 md:px-8 z-10">
 
-        {/* The Bento Grid Container */}
-        <div className="crew-grid-container relative h-[650px] md:h-auto block md:grid grid-cols-12 gap-4 md:gap-6 mb-16">
-          {crewData.map((member, i) => (
-            <CrewCard 
-              key={i} 
-              member={member} 
-              layout={bentoLayouts[i % bentoLayouts.length]} 
-              onClick={() => setSelectedMember(member)} 
-            />
-          ))}
+        {/* Pinned wrapper for mobile: header + grid stay together */}
+        <div className="crew-pin-wrapper">
+          {/* Section Header */}
+          <div className="mb-8 md:mb-16">
+            <div className="flex gap-1 mb-4">
+              <div className="w-2 h-2 bg-blue-600" />
+              <div className="w-2 h-2 bg-blue-400" />
+              <div className="w-2 h-2 bg-blue-200" />
+            </div>
+            <h2 className="font-orbitron text-4xl md:text-6xl font-black tracking-widest uppercase drop-shadow-sm mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] to-cyan-500">
+              Command Crew
+            </h2>
+          </div>
+
+          {/* The Bento Grid Container */}
+          <div className="crew-grid-container relative h-[650px] md:h-auto block md:grid grid-cols-12 gap-4 md:gap-6">
+            {crewData.map((member, i) => (
+              <CrewCard
+                key={i}
+                member={member}
+                layout={bentoLayouts[i % bentoLayouts.length]}
+                onClick={() => setSelectedMember(member)}
+              />
+            ))}
+          </div>
         </div>
 
         {/* CTAs */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-          <Link 
-            to="/team" 
+          <Link
+            to="/team"
             className="group relative inline-flex items-center justify-center px-8 py-4 md:px-10 md:py-5 font-mono text-xs md:text-sm font-bold tracking-[0.2em] text-slate-900 uppercase bg-white border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
             style={{ clipPath: 'polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px)' }}
           >
@@ -275,7 +285,7 @@ export const Team: React.FC = () => {
             </span>
           </Link>
 
-          <Link 
+          <Link
             to="/careers"
             className="group relative inline-flex items-center justify-center px-8 py-4 md:px-10 md:py-5 font-mono text-xs md:text-sm font-bold tracking-[0.2em] text-white uppercase bg-[#2563eb] overflow-hidden shadow-[0_10px_40px_rgba(37,99,235,0.3)] hover:shadow-[0_10px_50px_rgba(37,99,235,0.5)] transition-all duration-300 cursor-pointer"
             style={{ clipPath: 'polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px)' }}
@@ -289,7 +299,7 @@ export const Team: React.FC = () => {
         </div>
 
       </div>
-      
+
       {/* Central Modal Dialog */}
       <TeamMemberModal member={selectedMember} onClose={() => setSelectedMember(null)} />
     </section>
