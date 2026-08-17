@@ -14,7 +14,8 @@ const TECH_SUBSYSTEMS = [
 
 const NON_TECH_DIVISIONS = [
   'Outreach Division',
-  'Public Relations Division (Branding)'
+  'Public Relations Division (Branding)',
+  'Sponsorship'
 ];
 
 const SOFTWARE_TOOLS = [
@@ -88,7 +89,7 @@ const SUBSECTIONS: Record<string, string[]> = {
   'Embedded Systems Subsystem': ['Hardware Design', 'Firmware Development'],
   'Mechanical Subsystem': ['Physics & Analysis', 'CAD & Manufacturing'],
   'Computational Intelligence Subsystem': ['Artificial Intelligence & Machine Learning', 'Ground Station Software', 'Web & Application Development'],
-  'Outreach Division': ['Outreach', 'Partnerships', 'Collaborations', 'Sponsorships'],
+  'Outreach Division': ['Outreach', 'Partnerships', 'Collaborations'],
   'Public Relations Division (Branding)': ['Public Relations', 'Media', 'Marketing']
 };
 
