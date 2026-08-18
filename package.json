@@ -7,7 +7,7 @@
     "dev:frontend": "vite",
     "dev:backend": "nodemon server/index.js",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "start": "node --max-old-space-size=400 server/index.js",
+    "start": "node --max-old-space-size=256 server/index.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
