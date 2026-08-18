@@ -536,6 +536,13 @@ export const CareersPage: React.FC = () => {
     try {
       const submitData = { ...formData };
 
+      // Map teamType to match backend enum
+      if (submitData.teamType === 'Technical Division') {
+        submitData.teamType = 'Technical';
+      } else if (submitData.teamType === 'Operational Divisions') {
+        submitData.teamType = 'Non-Technical';
+      }
+
       // Merge 'Other' fields
       if (submitData.department === 'Other' && submitData.departmentOther) {
         submitData.department = `Other: ${submitData.departmentOther}`;
