@@ -75,7 +75,11 @@ export const AdminDashboard: React.FC = () => {
   const ADMIN_EMAILS = [
     'istiak.ahmmed.bishal@g.bracu.ac.bd',
     'bracudiganta@gmail.com',
-    'mountashiourtasnim@gmail.com'
+    'mountashiourtasnim@gmail.com',
+    'hasna.hena.jui@g.bracu.ac.bd',
+    'chironjeet.joy@bracu.ac.bd',
+    'md.mountashiour.rahman@g.bracu.ac.bd',
+    'tanvir.ahmed.tonmoy@g.bracu.ac.bd'
   ];
   const apiUrl = import.meta.env.VITE_CAREERS_API_URL;
 
