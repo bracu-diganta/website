@@ -4,7 +4,11 @@ import { auth } from '../../config/firebase';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const ADMIN_EMAIL = 'istiak.ahmmed.bishal@g.bracu.ac.bd';
+const ADMIN_EMAILS = [
+  'istiak.ahmmed.bishal@g.bracu.ac.bd',
+  'bracudiganta@gmail.com',
+  'mountashiourtasnim@gmail.com'
+];
 
 export const AdminLogin: React.FC = () => {
   const [error, setError] = useState('');
@@ -27,10 +31,11 @@ export const AdminLogin: React.FC = () => {
       provider.setCustomParameters({ prompt: 'select_account' });
       
       const userCredential = await signInWithPopup(auth, provider);
+      const userEmail = userCredential.user.email;
       
-      if (userCredential.user.email !== ADMIN_EMAIL) {
+      if (!userEmail || !ADMIN_EMAILS.includes(userEmail)) {
         await firebaseSignOut(auth);
-        throw new Error(`Access denied for ${userCredential.user.email}. Admin only.`);
+        throw new Error(`Access denied for ${userEmail || 'unknown'}. Admin only.`);
       }
       
       navigate('/admin/dashboard');

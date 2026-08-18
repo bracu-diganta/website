@@ -60,6 +60,7 @@ export const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [isCvVisible, setIsCvVisible] = useState(false);
+  const [cvUrls, setCvUrls] = useState<Record<string, string>>({});
   
   // Filtering and Search State
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,11 +72,15 @@ export const AdminDashboard: React.FC = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [statusUpdating, setStatusUpdating] = useState<string | null>(null);
 
-  const ADMIN_EMAIL = 'istiak.ahmmed.bishal@g.bracu.ac.bd';
+  const ADMIN_EMAILS = [
+    'istiak.ahmmed.bishal@g.bracu.ac.bd',
+    'bracudiganta@gmail.com',
+    'mountashiourtasnim@gmail.com'
+  ];
   const apiUrl = import.meta.env.VITE_CAREERS_API_URL;
 
   useEffect(() => {
-    if (!user || user.email !== ADMIN_EMAIL) {
+    if (!user || !user.email || !ADMIN_EMAILS.includes(user.email)) {
       if (user) signOut(); // Force sign out if not admin
       navigate('/admin/login');
       return;
@@ -84,7 +89,10 @@ export const AdminDashboard: React.FC = () => {
     // Fetch applications from the backend
     const fetchApplications = async () => {
       try {
-        const response = await fetch(`${apiUrl}/applications`);
+        const token = await user.getIdToken();
+        const response = await fetch(`${apiUrl}/applications`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         const data = await response.json();
         if (data.success) {
           setApplications(data.applications);
@@ -103,9 +111,13 @@ export const AdminDashboard: React.FC = () => {
   const updateStatus = async (id: string, status: ApplicationStatus) => {
     setStatusUpdating(id);
     try {
+      const token = await user?.getIdToken();
       const response = await fetch(`${apiUrl}/applications/${id}/status`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ status }),
       });
       const data = await response.json();
@@ -127,9 +139,13 @@ export const AdminDashboard: React.FC = () => {
     setStatusUpdating('bulk');
     try {
       const ids = Array.from(selectedIds);
+      const token = await user?.getIdToken();
       const response = await fetch(`${apiUrl}/applications/bulk-status`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ ids, status }),
       });
       const data = await response.json();
@@ -142,6 +158,35 @@ export const AdminDashboard: React.FC = () => {
     } finally {
       setStatusUpdating(null);
     }
+  };
+
+  // --- CV Fetch Handler ---
+  const [isCvLoading, setIsCvLoading] = useState(false);
+  const fetchCv = async (app: Application) => {
+    if (app.cvFileUrl) return app.cvFileUrl;
+    if (cvUrls[app._id]) return cvUrls[app._id];
+    
+    if (!user) return '';
+    setIsCvLoading(true);
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch(`${apiUrl}/cv/${app._id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        setCvUrls(prev => ({ ...prev, [app._id]: objectUrl }));
+        return objectUrl;
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsCvLoading(false);
+    }
+    return '';
   };
 
   const getAppStatus = (app: Application): ApplicationStatus => app.status || 'applied';
@@ -525,8 +570,11 @@ export const AdminDashboard: React.FC = () => {
                               View CV
                             </button>
                             <a
-                              href={app.cvFileUrl || `${import.meta.env.VITE_CAREERS_API_URL}/cv/${app._id}`}
-                              target="_blank"
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                const url = await fetchCv(app);
+                                if (url) window.open(url, '_blank');
+                              }}
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
                               className="inline-block lg:hidden px-5 py-2 bg-[#10B981] text-white rounded-full font-mono text-[10px] font-bold tracking-[0.1em] uppercase hover:bg-[#059669] transition-colors shadow-sm"
@@ -566,11 +614,17 @@ export const AdminDashboard: React.FC = () => {
                   <h3 className="font-orbitron font-bold tracking-widest uppercase text-sm">Resume Preview</h3>
                   <button onClick={() => setIsCvVisible(false)} className="p-2 hover:bg-slate-700 rounded-full transition-colors text-slate-300 hover:text-white"><X size={20}/></button>
                </div>
-               <iframe 
-                 src={selectedApp.cvFileUrl || `${import.meta.env.VITE_CAREERS_API_URL}/cv/${selectedApp._id}`} 
-                 className="w-full h-full rounded-xl shadow-2xl bg-white" 
-                 title="CV Preview"
-               ></iframe>
+               {isCvLoading ? (
+                 <div className="w-full h-full rounded-xl shadow-2xl bg-white flex items-center justify-center text-slate-400 font-mono">
+                   Loading secure PDF...
+                 </div>
+               ) : (
+                 <iframe 
+                   src={selectedApp.cvFileUrl || cvUrls[selectedApp._id]} 
+                   className="w-full h-full rounded-xl shadow-2xl bg-white" 
+                   title="CV Preview"
+                 ></iframe>
+               )}
             </div>
           )}
 
@@ -603,21 +657,25 @@ export const AdminDashboard: React.FC = () => {
                   <>
                     {/* Desktop Toggle Button */}
                     <button
-                      onClick={() => setIsCvVisible(!isCvVisible)}
+                      onClick={async () => {
+                        if (!isCvVisible) await fetchCv(selectedApp);
+                        setIsCvVisible(!isCvVisible);
+                      }}
                       className="hidden lg:flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-full font-mono text-[11px] font-bold tracking-widest uppercase hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20"
                     >
                       <ExternalLink size={14} />
                       {isCvVisible ? 'Hide CV' : 'View CV'}
                     </button>
-                    <a
-                      href={selectedApp.cvFileUrl || `${import.meta.env.VITE_CAREERS_API_URL}/cv/${selectedApp._id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={async () => {
+                        const url = await fetchCv(selectedApp);
+                        if (url) window.open(url, '_blank');
+                      }}
                       className="flex lg:hidden items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-full font-mono text-[11px] font-bold tracking-widest uppercase hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20"
                     >
                       <ExternalLink size={14} />
                       View CV
-                    </a>
+                    </button>
                   </>
                 )}
                 <button 

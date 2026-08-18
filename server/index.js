@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import multer from 'multer';
 import Contact from './models/Contact.js';
 import Application from './models/Application.js';
+import admin from 'firebase-admin';
 
 // Multer config: store file in memory (Buffer), max 2 MB
 const upload = multer({
@@ -21,6 +22,36 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Initialize Firebase Admin
+admin.initializeApp({
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID || 'bracu-diganta',
+});
+
+const ADMIN_EMAILS = [
+  'istiak.ahmmed.bishal@g.bracu.ac.bd',
+  'bracudiganta@gmail.com',
+  'mountashiourtasnim@gmail.com'
+];
+
+const requireAdmin = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized: Missing token' });
+  }
+  const token = authHeader.split('Bearer ')[1];
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    if (!decodedToken.email || !ADMIN_EMAILS.includes(decodedToken.email)) {
+      return res.status(403).json({ error: 'Forbidden: Admins only' });
+    }
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+  }
+};
 
 // Middleware
 app.use(cors());
@@ -129,7 +160,7 @@ app.post('/api/careers', upload.single('cvFile'), async (req, res) => {
 });
 
 // Route to view CV directly from MongoDB (For backward compatibility with old applications)
-app.get('/api/careers/cv/:id', async (req, res) => {
+app.get('/api/careers/cv/:id', requireAdmin, async (req, res) => {
   try {
     const application = await Application.findById(req.params.id);
     if (!application || !application.cvFile || !application.cvFile.data) {
@@ -148,7 +179,7 @@ app.get('/api/careers/cv/:id', async (req, res) => {
 });
 
 // Route to fetch all applications (for Admin panel)
-app.get('/api/careers/applications', async (req, res) => {
+app.get('/api/careers/applications', requireAdmin, async (req, res) => {
   try {
     // Select all fields except cvFile.data to avoid downloading massive binary data
     const applications = await Application.find({}).select('-cvFile.data').sort({ createdAt: -1 });
@@ -160,7 +191,7 @@ app.get('/api/careers/applications', async (req, res) => {
 });
 
 // Route to update a single application's recruitment status
-app.patch('/api/careers/applications/:id/status', async (req, res) => {
+app.patch('/api/careers/applications/:id/status', requireAdmin, async (req, res) => {
   try {
     const { status } = req.body;
     const validStatuses = ['applied', 'shortlisted', 'selected', 'rejected'];
@@ -188,7 +219,7 @@ app.patch('/api/careers/applications/:id/status', async (req, res) => {
 });
 
 // Route to bulk-update multiple applications' recruitment status
-app.patch('/api/careers/applications/bulk-status', async (req, res) => {
+app.patch('/api/careers/applications/bulk-status', requireAdmin, async (req, res) => {
   try {
     const { ids, status } = req.body;
     const validStatuses = ['applied', 'shortlisted', 'selected', 'rejected'];
