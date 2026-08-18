@@ -7,15 +7,15 @@ const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const TECH_SUBSYSTEMS = [
   'Embedded Systems Subsystem',
-  'Communications & Data Subsystem',
+  'Communications & Data Handling Subsystem',
   'Mechanical Subsystem',
   'Computational Intelligence Subsystem'
 ];
 
-const NON_TECH_DIVISIONS = [
-  'Outreach Division',
-  'Public Relations Division (Branding)',
-  'Sponsorship'
+const OPERATIONAL_DIVISIONS = [
+  'Operations Division',
+  'Outreach & Engagement Division',
+  'Media & Marketing Division'
 ];
 
 const SOFTWARE_TOOLS = [
@@ -89,8 +89,9 @@ const SUBSECTIONS: Record<string, string[]> = {
   'Embedded Systems Subsystem': ['Hardware Design', 'Firmware Development'],
   'Mechanical Subsystem': ['Physics & Analysis', 'CAD & Manufacturing'],
   'Computational Intelligence Subsystem': ['Artificial Intelligence & Machine Learning', 'Ground Station Software', 'Web & Application Development'],
-  'Outreach Division': ['Outreach', 'Partnerships', 'Collaborations'],
-  'Public Relations Division (Branding)': ['Public Relations', 'Media', 'Marketing']
+  'Operations Division': ['Partnerships', 'Collaborations', 'Sponsorships', 'Logistics', 'Internal Coordination'],
+  'Outreach & Engagement Division': ['Internal Outreach', 'External Outreach', 'Events'],
+  'Media & Marketing Division': ['Public Relations', 'Media Production', 'Social Media Marketing', 'Copywriting']
 };
 
 const DEPARTMENTS = [
@@ -101,8 +102,18 @@ const SEMESTERS = [
   '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'
 ];
 
+const DIVISION_DUTIES: Record<string, string> = {
+  'Embedded Systems Subsystem': 'Digital system design, PCB design and manufacturing, electronic hardware development, microcontroller programming, embedded firmware development, sensor integration and sensor fusion, hardware and firmware debugging, system integration.',
+  'Communications & Data Handling Subsystem': 'RF communication systems, telemetry systems, communication protocols, ground-to-payload communication, communication firmware development, antenna design and optimization, data acquisition and handling.',
+  'Mechanical Subsystem': 'Flight dynamics and stability analysis, descent rate calculations, parachute and recovery system design, payload deployment analysis, structural analysis, mission simulations, CAD modeling and mechanical design, fabrication and manufacturing, 3D printing, CFD simulations, FEA simulations, stress and strain analysis.',
+  'Computational Intelligence Subsystem': 'Artificial Intelligence (AI), Machine Learning (ML), Deep Learning (DL), Reinforcement Learning (RL), TinyML, Computer Vision, ground station software development, web application development, mobile application development, data visualization and software tools.',
+  'Operations Division': 'Sponsorship acquisition, industry and organizational partnerships, academic and international collaborations, proposal writing, logistics planning and execution, internal scheduling and coordination.',
+  'Outreach & Engagement Division': 'Community engagement, outreach programs, school and university engagement, event planning and execution.',
+  'Media & Marketing Division': 'Branding and identity, graphic design, social media management, photography and videography, content creation, website content management, press releases, merchandise design, event promotion, presentation design.'
+};
+
 // Recruitment deadline — change this date to control the countdown
-const RECRUITMENT_DEADLINE = new Date('2026-08-30T23:59:59+06:00');
+const RECRUITMENT_DEADLINE = new Date('2026-08-27T23:59:59+06:00');
 
 
 interface InputFieldProps {
@@ -381,7 +392,7 @@ const defaultFormData = {
   departmentOther: '',
   currentSemester: '',
   completedCredits: '',
-  teamType: '', // Technical | Non-Technical
+  teamType: '', // Technical Division | Operational Divisions
   firstPreference: '',
   firstPreferenceSubsection: '',
   secondPreference: '',
@@ -666,23 +677,13 @@ export const CareersPage: React.FC = () => {
                 {/* Section B */}
                 <div className="space-y-6 bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
                   <h2 className="font-orbitron text-xl sm:text-2xl font-bold text-slate-900 uppercase tracking-wider bg-slate-100 p-3 sm:p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
-                    <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">B</span> General Questions
-                  </h2>
-                  <TextAreaField label="Why do you want to join Diganta?" name="whyDiganta" value={formData.whyDiganta} onChange={handleChange} hint="80-120 words" minWords={80} maxWords={120} />
-                  <TextAreaField label="What aspects of the division you selected interest you the most and why?" name="aspectsOfInterest" value={formData.aspectsOfInterest} onChange={handleChange} hint="80-120 words" minWords={80} maxWords={120} />
-                  <TextAreaField label="Are you currently involved in any club, lab or organization? If yes, please mention the organization and your role." name="clubInvolvement" value={formData.clubInvolvement} onChange={handleChange} required={false} rows={2} />
-                </div>
-
-                {/* Section C */}
-                <div className="space-y-6 bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
-                  <h2 className="font-orbitron text-xl sm:text-2xl font-bold text-slate-900 uppercase tracking-wider bg-slate-100 p-3 sm:p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
-                    <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">C</span> Application Preference
+                    <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">B</span> Application Preference
                   </h2>
 
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm sm:text-base font-bold text-slate-600 uppercase tracking-wider ml-2">Which team are you applying for? <span className="text-blue-500">*</span></label>
+                    <label className="text-sm sm:text-base font-bold text-slate-600 uppercase tracking-wider ml-2">Which division are you applying for? <span className="text-blue-500">*</span></label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {['Technical', 'Non-Technical'].map(type => (
+                      {['Technical Division', 'Operational Divisions'].map(type => (
                         <button
                           key={type}
                           type="button"
@@ -691,7 +692,7 @@ export const CareersPage: React.FC = () => {
                           }}
                           className={`py-4 rounded-xl font-orbitron font-bold text-sm tracking-widest uppercase transition-all duration-300 border-2 ${formData.teamType === type ? 'bg-blue-600 border-blue-600 text-white shadow-[0_8px_20px_rgba(37,99,235,0.25)] scale-[1.02]' : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-blue-300 hover:bg-slate-100 hover:text-blue-500'}`}
                         >
-                          {type} Team
+                          {type}
                         </button>
                       ))}
                     </div>
@@ -701,11 +702,11 @@ export const CareersPage: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 animate-in slide-in-from-top-2 fade-in duration-300">
                       <div className="flex flex-col gap-5 sm:gap-6">
                         <div className="flex flex-col gap-2">
-                          <label htmlFor="field-firstPreference" className="text-sm sm:text-base font-bold text-slate-600 uppercase tracking-wider ml-2">Preferred {formData.teamType === 'Technical' ? 'Subsystem' : 'Division'} <span className="text-blue-500">*</span></label>
+                          <label htmlFor="field-firstPreference" className="text-sm sm:text-base font-bold text-slate-600 uppercase tracking-wider ml-2">Preferred {formData.teamType === 'Technical Division' ? 'Subsystem' : 'Division'} <span className="text-blue-500">*</span></label>
                           <div className="relative">
                             <select id="field-firstPreference" name="firstPreference" value={formData.firstPreference} onChange={handleChange} required className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-5 py-3 text-sm lg:text-base font-semibold text-slate-900 focus:border-blue-500 outline-none appearance-none cursor-pointer">
                               <option value="" disabled>Select primary choice...</option>
-                              {(formData.teamType === 'Technical' ? TECH_SUBSYSTEMS : NON_TECH_DIVISIONS).map(opt => (
+                              {(formData.teamType === 'Technical Division' ? TECH_SUBSYSTEMS : OPERATIONAL_DIVISIONS).map(opt => (
                                 <option key={opt} value={opt}>{opt}</option>
                               ))}
                             </select>
@@ -713,6 +714,12 @@ export const CareersPage: React.FC = () => {
                               <ChevronDown size={20} />
                             </div>
                           </div>
+                          {formData.firstPreference && DIVISION_DUTIES[formData.firstPreference] && (
+                            <div className="mt-1 px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl text-xs sm:text-sm text-slate-600 animate-in slide-in-from-top-1 fade-in duration-300">
+                              <strong className="text-blue-700 block mb-1">Responsibilities:</strong>
+                              {DIVISION_DUTIES[formData.firstPreference]}
+                            </div>
+                          )}
                         </div>
                         {formData.firstPreference && SUBSECTIONS[formData.firstPreference] && (
                           <div className="flex flex-col gap-2 animate-in slide-in-from-top-2 fade-in duration-300">
@@ -737,7 +744,7 @@ export const CareersPage: React.FC = () => {
                           <div className="relative">
                             <select id="field-secondPreference" name="secondPreference" value={formData.secondPreference} onChange={handleChange} required className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-5 py-3 text-sm lg:text-base font-semibold text-slate-900 focus:border-blue-500 outline-none appearance-none cursor-pointer">
                               <option value="" disabled>Select secondary choice...</option>
-                              {(formData.teamType === 'Technical' ? TECH_SUBSYSTEMS : NON_TECH_DIVISIONS).map(opt => (
+                              {(formData.teamType === 'Technical Division' ? TECH_SUBSYSTEMS : OPERATIONAL_DIVISIONS).map(opt => (
                                 <option key={opt} value={opt} disabled={opt === formData.firstPreference}>{opt}</option>
                               ))}
                             </select>
@@ -745,6 +752,12 @@ export const CareersPage: React.FC = () => {
                               <ChevronDown size={20} />
                             </div>
                           </div>
+                          {formData.secondPreference && DIVISION_DUTIES[formData.secondPreference] && (
+                            <div className="mt-1 px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl text-xs sm:text-sm text-slate-600 animate-in slide-in-from-top-1 fade-in duration-300">
+                              <strong className="text-blue-700 block mb-1">Responsibilities:</strong>
+                              {DIVISION_DUTIES[formData.secondPreference]}
+                            </div>
+                          )}
                         </div>
                         {formData.secondPreference && SUBSECTIONS[formData.secondPreference] && (
                           <div className="flex flex-col gap-2 animate-in slide-in-from-top-2 fade-in duration-300">
@@ -767,8 +780,18 @@ export const CareersPage: React.FC = () => {
                   )}
                 </div>
 
+                {/* Section C */}
+                <div className="space-y-6 bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
+                  <h2 className="font-orbitron text-xl sm:text-2xl font-bold text-slate-900 uppercase tracking-wider bg-slate-100 p-3 sm:p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
+                    <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">C</span> General Questions
+                  </h2>
+                  <TextAreaField label="Why do you want to join Diganta?" name="whyDiganta" value={formData.whyDiganta} onChange={handleChange} hint="80-120 words" minWords={80} maxWords={120} />
+                  <TextAreaField label="What aspects of the division you selected interest you the most and why?" name="aspectsOfInterest" value={formData.aspectsOfInterest} onChange={handleChange} hint="80-120 words" minWords={80} maxWords={120} />
+                  <TextAreaField label="Are you currently involved in any club, lab or organization? If yes, please mention the organization and your role." name="clubInvolvement" value={formData.clubInvolvement} onChange={handleChange} required={false} rows={2} />
+                </div>
+
                 {/* Section D (Technical) */}
-                {formData.teamType === 'Technical' && (
+                {formData.teamType === 'Technical Division' && (
                   <div className="space-y-6 animate-in slide-in-from-top-2 fade-in duration-300 bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
                     <h2 className="font-orbitron text-xl sm:text-2xl font-bold text-slate-900 uppercase tracking-wider bg-slate-100 p-3 sm:p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
                       <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">D</span> Technical Details
@@ -817,10 +840,10 @@ export const CareersPage: React.FC = () => {
                 )}
 
                 {/* Section D (Non-Technical) */}
-                {formData.teamType === 'Non-Technical' && (
+                {formData.teamType === 'Operational Divisions' && (
                   <div className="space-y-6 animate-in slide-in-from-top-2 fade-in duration-300 bg-white border border-slate-200 rounded-[2rem] p-6 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
                     <h2 className="font-orbitron text-xl sm:text-2xl font-bold text-slate-900 uppercase tracking-wider bg-slate-100 p-3 sm:p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
-                      <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">D</span> Non-Technical Details
+                      <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm shadow-sm">D</span> Operational Details
                     </h2>
 
                     <div className="flex flex-col gap-3">
