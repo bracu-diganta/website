@@ -15,7 +15,7 @@ export const HeroSection: React.FC = () => {
         </h1>
         <div className="w-12 h-[3px] bg-telemetry-cyan my-8" />
         <p className="text-base md:text-lg text-gray-600 text-left max-w-md leading-relaxed">
-          Democratizing space,<br />one launch at a time.
+          Looking over the horizon.<br />Promoting STEAM and Space education in Bangladesh
         </p>
       </div>
 

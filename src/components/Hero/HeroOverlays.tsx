@@ -500,7 +500,7 @@ export const HeroOverlays: React.FC<HeroOverlaysProps> = ({ scrollData }) => {
           </h1>
           <div className="w-12 h-[3px] bg-telemetry-cyan my-6 md:my-8" />
           <p className="text-sm md:text-lg text-gray-800 md:text-gray-600 text-left max-w-md leading-relaxed font-medium md:font-normal">
-            Democratizing space,<br />one launch at a time.
+            Looking over the horizon.<br />Promoting STEAM and Space<br />education in Bangladesh
           </p>
         </div>
 
