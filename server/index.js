@@ -255,7 +255,7 @@ app.patch('/api/careers/applications/bulk-status', requireAdmin, async (req, res
 
 // Start Server
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Backend Server running on http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Backend Server running on port ${PORT}`);
   });
 });
