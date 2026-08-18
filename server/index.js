@@ -4,10 +4,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRemoteJWKSet, jwtVerify } from 'jose';
 import multer from 'multer';
 import Contact from './models/Contact.js';
 import Application from './models/Application.js';
-import admin from 'firebase-admin';
 
 // Multer config: store file in memory (Buffer), max 2 MB
 const upload = multer({
@@ -22,16 +22,22 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const FIREBASE_PROJECT_ID = process.env.VITE_FIREBASE_PROJECT_ID || 'bracu-diganta';
 
-// Initialize Firebase Admin
-admin.initializeApp({
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID || 'bracu-diganta',
-});
+// Lightweight Firebase ID token verification using Google's public JWKS
+// (Replaces the heavy firebase-admin SDK to save ~100-150MB of RAM)
+const GOOGLE_JWKS = createRemoteJWKSet(
+  new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com')
+);
 
 const ADMIN_EMAILS = [
   'istiak.ahmmed.bishal@g.bracu.ac.bd',
   'bracudiganta@gmail.com',
-  'mountashiourtasnim@gmail.com'
+  'mountashiourtasnim@gmail.com',
+  'hasna.hena.jui@g.bracu.ac.bd',
+  'chironjeet.joy@bracu.ac.bd',
+  'md.mountashiour.rahman@g.bracu.ac.bd',
+  'tanvir.ahmed.tonmoy@g.bracu.ac.bd'
 ];
 
 const requireAdmin = async (req, res, next) => {
@@ -41,14 +47,17 @@ const requireAdmin = async (req, res, next) => {
   }
   const token = authHeader.split('Bearer ')[1];
   try {
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    if (!decodedToken.email || !ADMIN_EMAILS.includes(decodedToken.email)) {
+    const { payload } = await jwtVerify(token, GOOGLE_JWKS, {
+      issuer: `https://securetoken.google.com/${FIREBASE_PROJECT_ID}`,
+      audience: FIREBASE_PROJECT_ID,
+    });
+    if (!payload.email || !ADMIN_EMAILS.includes(payload.email)) {
       return res.status(403).json({ error: 'Forbidden: Admins only' });
     }
-    req.user = decodedToken;
+    req.user = payload;
     next();
   } catch (error) {
-    console.error('Token verification failed:', error);
+    console.error('Token verification failed:', error.message);
     return res.status(401).json({ error: 'Unauthorized: Invalid token' });
   }
 };
