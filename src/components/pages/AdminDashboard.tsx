@@ -61,7 +61,7 @@ export const AdminDashboard: React.FC = () => {
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [isCvVisible, setIsCvVisible] = useState(false);
   const [cvUrls, setCvUrls] = useState<Record<string, string>>({});
-  
+
   // Filtering and Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('All');
@@ -85,7 +85,7 @@ export const AdminDashboard: React.FC = () => {
       navigate('/admin/login');
       return;
     }
-    
+
     // Fetch applications from the backend
     const fetchApplications = async () => {
       try {
@@ -114,7 +114,7 @@ export const AdminDashboard: React.FC = () => {
       const token = await user?.getIdToken();
       const response = await fetch(`${apiUrl}/applications/${id}/status`, {
         method: 'PATCH',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
@@ -142,7 +142,7 @@ export const AdminDashboard: React.FC = () => {
       const token = await user?.getIdToken();
       const response = await fetch(`${apiUrl}/applications/bulk-status`, {
         method: 'PATCH',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
@@ -165,7 +165,7 @@ export const AdminDashboard: React.FC = () => {
   const fetchCv = async (app: Application) => {
     if (app.cvFileUrl) return app.cvFileUrl;
     if (cvUrls[app._id]) return cvUrls[app._id];
-    
+
     if (!user) return '';
     setIsCvLoading(true);
     try {
@@ -231,15 +231,15 @@ export const AdminDashboard: React.FC = () => {
 
   // Derived Filtered List
   const filteredApplications = applications.filter(app => {
-    const matchesSearch = 
-      (app.fullName || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch =
+      (app.fullName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (app.studentId || '').includes(searchQuery) ||
       (app.universityEmail || '').toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesDept = departmentFilter === 'All' ? true : app.department === departmentFilter;
     const matchesTeam = teamFilter === 'All' ? true : app.teamType === teamFilter;
     const matchesTab = activeTab === 'all' ? true : getAppStatus(app) === activeTab;
-    
+
     return matchesSearch && matchesDept && matchesTeam && matchesTab;
   });
 
@@ -247,13 +247,13 @@ export const AdminDashboard: React.FC = () => {
 
   const exportToCSV = () => {
     const headers = [
-      'Date', 'Status', 'Name', 'Student ID', 'University Email', 'Personal Email', 
-      'Department', 'Semester', 'Completed Credits', 'Team Type', 'First Preference', 'First Preference Subsection', 
+      'Date', 'Status', 'Name', 'Student ID', 'University Email', 'Personal Email',
+      'Department', 'Semester', 'Completed Credits', 'Team Type', 'First Preference', 'First Preference Subsection',
       'Second Preference', 'Second Preference Subsection', 'Technical Skills', 'Software Tools', 'Comfortable Tasks',
-      'Club Involvement', 'Portfolio Links', 'Why Diganta', 'Aspects of Interest', 
+      'Club Involvement', 'Portfolio Links', 'Why Diganta', 'Aspects of Interest',
       'Skills/Strengths', 'Relevant Experiences', 'Hope to Learn'
     ];
-    
+
     // Helper function to safely escape strings for CSV (handles commas, quotes, and newlines)
     const escapeCSV = (str: string | undefined | null) => {
       if (!str) return '""';
@@ -291,7 +291,7 @@ export const AdminDashboard: React.FC = () => {
       escapeCSV(app.relevantExperiences),
       escapeCSV(app.hopeToLearn)
     ]);
-    
+
     const csvString = [headers.join(','), ...csvData.map(row => row.join(','))].join('\n');
     const blob = new Blob([csvString], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -305,7 +305,7 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#eef2f5] text-gray-900 px-8 py-24 md:px-16 md:pt-32 md:pb-16">
       <div className="max-w-7xl mx-auto">
-        
+
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
@@ -331,7 +331,7 @@ export const AdminDashboard: React.FC = () => {
               <p className="text-2xl font-bold text-gray-900">{totalApps}</p>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] flex items-center gap-4">
             <div className="p-4 bg-amber-50 text-amber-600 rounded-2xl">
               <Star size={24} />
@@ -371,11 +371,10 @@ export const AdminDashboard: React.FC = () => {
               <button
                 key={tab.key}
                 onClick={() => { setActiveTab(tab.key); setSelectedIds(new Set()); }}
-                className={`px-5 py-2.5 rounded-full font-mono text-xs font-bold tracking-wider uppercase transition-all ${
-                  activeTab === tab.key
-                    ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20'
-                    : 'bg-white text-gray-500 hover:bg-gray-100 shadow-sm'
-                }`}
+                className={`px-5 py-2.5 rounded-full font-mono text-xs font-bold tracking-wider uppercase transition-all ${activeTab === tab.key
+                  ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20'
+                  : 'bg-white text-gray-500 hover:bg-gray-100 shadow-sm'
+                  }`}
               >
                 {tab.label} <span className={`ml-1.5 ${activeTab === tab.key ? 'text-gray-300' : 'text-gray-400'}`}>({count})</span>
               </button>
@@ -430,13 +429,13 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Search and Filters Toolbar */}
         <div className="bg-white rounded-3xl p-4 md:p-6 mb-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] flex flex-col lg:flex-row gap-4 justify-between items-center z-20 relative">
-          
+
           {/* Search */}
           <div className="relative w-full lg:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search by Name, ID, or Email..." 
+            <input
+              type="text"
+              placeholder="Search by Name, ID, or Email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
@@ -448,7 +447,7 @@ export const AdminDashboard: React.FC = () => {
             <div className="flex gap-4 flex-1 sm:flex-none">
               <div className="relative flex-1 sm:flex-none">
                 <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                <select 
+                <select
                   value={departmentFilter}
                   onChange={(e) => setDepartmentFilter(e.target.value)}
                   className="w-full pl-10 pr-8 py-3 bg-gray-50 border border-gray-100 rounded-full text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium cursor-pointer"
@@ -461,7 +460,7 @@ export const AdminDashboard: React.FC = () => {
 
               <div className="relative flex-1 sm:flex-none">
                 <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                <select 
+                <select
                   value={teamFilter}
                   onChange={(e) => setTeamFilter(e.target.value)}
                   className="w-full pl-10 pr-8 py-3 bg-gray-50 border border-gray-100 rounded-full text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium cursor-pointer"
@@ -521,75 +520,74 @@ export const AdminDashboard: React.FC = () => {
                   const config = STATUS_CONFIG[status];
                   const isChecked = selectedIds.has(app._id);
                   return (
-                  <React.Fragment key={app._id}>
-                    <tr 
-                      onClick={() => setSelectedApp(app)}
-                      className={`border-b border-gray-50 hover:bg-blue-50/50 transition-colors cursor-pointer group ${isChecked ? 'bg-blue-50/30' : ''}`}
-                    >
-                      <td className="py-4 pl-2" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => toggleSelect(app._id)}
-                          className="text-gray-400 hover:text-blue-500 transition-colors"
-                        >
-                          {isChecked ? (
-                            <CheckSquare size={18} className="text-blue-500" />
-                          ) : (
-                            <Square size={18} />
-                          )}
-                        </button>
-                      </td>
-                      <td className="py-4 font-mono text-sm text-gray-500">
-                        {new Date(app.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="py-4 font-medium">{app.fullName}</td>
-                      <td className="py-4 font-mono text-sm text-gray-600">{app.studentId}</td>
-                      <td className="py-4 font-mono text-sm text-gray-600">{app.department}</td>
-                      <td className="py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 ${config.bg} ${config.color} ${config.border} border rounded-full text-[10px] font-bold tracking-wider uppercase`}>
-                          {config.icon}
-                          {config.label}
-                        </span>
-                      </td>
-                      <td className="py-4">
-                        <span className="px-3 py-1 bg-[#eef2f5] text-gray-600 rounded-full font-mono text-[10px] tracking-wider uppercase font-bold">
-                          {app.firstPreference}
-                        </span>
-                      </td>
-                      <td className="py-4 text-right">
-                        {(app.cvFileUrl || app.cvFile) ? (
-                          <>
-                            {/* Desktop Button - Opens Drawer + Split Screen */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedApp(app);
-                                setIsCvVisible(true);
-                              }}
-                              className="hidden lg:inline-block px-5 py-2 bg-[#10B981] text-white rounded-full font-mono text-[10px] font-bold tracking-[0.1em] uppercase hover:bg-[#059669] transition-colors shadow-sm"
-                            >
-                              View CV
-                            </button>
-                            <a
-                              onClick={async (e) => {
-                                e.stopPropagation();
-                                const url = await fetchCv(app);
-                                if (url) window.open(url, '_blank');
-                              }}
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-block lg:hidden px-5 py-2 bg-[#10B981] text-white rounded-full font-mono text-[10px] font-bold tracking-[0.1em] uppercase hover:bg-[#059669] transition-colors shadow-sm"
-                            >
-                              View CV
-                            </a>
-                          </>
-                        ) : (
-                          <span className="inline-block px-4 py-2 bg-gray-100 text-gray-400 rounded-full font-mono text-[10px] font-bold tracking-[0.1em] uppercase shadow-sm border border-gray-200">
-                            No CV
+                    <React.Fragment key={app._id}>
+                      <tr
+                        onClick={() => setSelectedApp(app)}
+                        className={`border-b border-gray-50 hover:bg-blue-50/50 transition-colors cursor-pointer group ${isChecked ? 'bg-blue-50/30' : ''}`}
+                      >
+                        <td className="py-4 pl-2" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={() => toggleSelect(app._id)}
+                            className="text-gray-400 hover:text-blue-500 transition-colors"
+                          >
+                            {isChecked ? (
+                              <CheckSquare size={18} className="text-blue-500" />
+                            ) : (
+                              <Square size={18} />
+                            )}
+                          </button>
+                        </td>
+                        <td className="py-4 font-mono text-sm text-gray-500">
+                          {new Date(app.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="py-4 font-medium">{app.fullName}</td>
+                        <td className="py-4 font-mono text-sm text-gray-600">{app.studentId}</td>
+                        <td className="py-4 font-mono text-sm text-gray-600">{app.department}</td>
+                        <td className="py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 ${config.bg} ${config.color} ${config.border} border rounded-full text-[10px] font-bold tracking-wider uppercase`}>
+                            {config.icon}
+                            {config.label}
                           </span>
-                        )}
-                      </td>
-                    </tr>
-                  </React.Fragment>
+                        </td>
+                        <td className="py-4">
+                          <span className="px-3 py-1 bg-[#eef2f5] text-gray-600 rounded-full font-mono text-[10px] tracking-wider uppercase font-bold">
+                            {app.firstPreference}
+                          </span>
+                        </td>
+                        <td className="py-4 text-right">
+                          {(app.cvFileUrl || app.cvFile) ? (
+                            <>
+                              {/* Desktop Button - Opens Drawer + Split Screen */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedApp(app);
+                                  setIsCvVisible(true);
+                                }}
+                                className="hidden lg:inline-block px-5 py-2 bg-[#10B981] text-white rounded-full font-mono text-[10px] font-bold tracking-[0.1em] uppercase hover:bg-[#059669] transition-colors shadow-sm"
+                              >
+                                View CV
+                              </button>
+                              <a
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  const url = await fetchCv(app);
+                                  if (url) window.open(url, '_blank');
+                                }}
+                                rel="noopener noreferrer"
+                                className="inline-block lg:hidden px-5 py-2 bg-[#10B981] text-white rounded-full font-mono text-[10px] font-bold tracking-[0.1em] uppercase hover:bg-[#059669] transition-colors shadow-sm"
+                              >
+                                View CV
+                              </a>
+                            </>
+                          ) : (
+                            <span className="inline-block px-4 py-2 bg-gray-100 text-gray-400 rounded-full font-mono text-[10px] font-bold tracking-[0.1em] uppercase shadow-sm border border-gray-200">
+                              No CV
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    </React.Fragment>
                   );
                 })}
               </tbody>
@@ -602,29 +600,29 @@ export const AdminDashboard: React.FC = () => {
       {selectedApp && (
         <div className="fixed inset-0 z-50 flex">
           {/* Overlay */}
-          <div 
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" 
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
             onClick={() => { setSelectedApp(null); setIsCvVisible(false); }}
           ></div>
 
           {/* Left Side: PDF Viewer */}
           {isCvVisible && (selectedApp.cvFileUrl || selectedApp.cvFile) && (
             <div className="relative flex-1 bg-slate-800/90 backdrop-blur p-4 lg:p-8 animate-in slide-in-from-left duration-300 flex-col z-10 border-r border-slate-700 hidden lg:flex">
-               <div className="flex justify-between items-center text-white mb-4">
-                  <h3 className="font-orbitron font-bold tracking-widest uppercase text-sm">Resume Preview</h3>
-                  <button onClick={() => setIsCvVisible(false)} className="p-2 hover:bg-slate-700 rounded-full transition-colors text-slate-300 hover:text-white"><X size={20}/></button>
-               </div>
-               {isCvLoading ? (
-                 <div className="w-full h-full rounded-xl shadow-2xl bg-white flex items-center justify-center text-slate-400 font-mono">
-                   Loading secure PDF...
-                 </div>
-               ) : (
-                 <iframe 
-                   src={selectedApp.cvFileUrl || cvUrls[selectedApp._id]} 
-                   className="w-full h-full rounded-xl shadow-2xl bg-white" 
-                   title="CV Preview"
-                 ></iframe>
-               )}
+              <div className="flex justify-between items-center text-white mb-4">
+                <h3 className="font-orbitron font-bold tracking-widest uppercase text-sm">Resume Preview</h3>
+                <button onClick={() => setIsCvVisible(false)} className="p-2 hover:bg-slate-700 rounded-full transition-colors text-slate-300 hover:text-white"><X size={20} /></button>
+              </div>
+              {isCvLoading ? (
+                <div className="w-full h-full rounded-xl shadow-2xl bg-white flex items-center justify-center text-slate-400 font-mono">
+                  Loading secure PDF...
+                </div>
+              ) : (
+                <iframe
+                  src={selectedApp.cvFileUrl || cvUrls[selectedApp._id]}
+                  className="w-full h-full rounded-xl shadow-2xl bg-white"
+                  title="CV Preview"
+                ></iframe>
+              )}
             </div>
           )}
 
@@ -632,7 +630,7 @@ export const AdminDashboard: React.FC = () => {
           {(!isCvVisible || (!selectedApp.cvFileUrl && !selectedApp.cvFile)) && (
             <div className="flex-1 hidden lg:block" onClick={() => { setSelectedApp(null); setIsCvVisible(false); }}></div>
           )}
-          
+
           {/* Panel */}
           <div className="relative w-full lg:w-[48rem] max-w-full bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 z-20">
             {/* Header */}
@@ -678,7 +676,7 @@ export const AdminDashboard: React.FC = () => {
                     </button>
                   </>
                 )}
-                <button 
+                <button
                   onClick={() => { setSelectedApp(null); setIsCvVisible(false); }}
                   className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
                 >
@@ -730,10 +728,10 @@ export const AdminDashboard: React.FC = () => {
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-6 space-y-8" data-lenis-prevent>
-              
+
               {/* Top Row: Basic Info & Preferences */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
+
                 {/* Basic Info Card */}
                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-4">
                   <h3 className="font-orbitron font-bold text-xs tracking-wider uppercase text-blue-600 flex items-center gap-2">
@@ -776,13 +774,13 @@ export const AdminDashboard: React.FC = () => {
                     <div>
                       <p className="text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">First Choice</p>
                       <p className="text-sm font-bold text-gray-900">{selectedApp.firstPreference}</p>
-                      {selectedApp.firstPreferenceSubsection && <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1"><ChevronDown size={12} className="-rotate-90"/> {selectedApp.firstPreferenceSubsection}</p>}
+                      {selectedApp.firstPreferenceSubsection && <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1"><ChevronDown size={12} className="-rotate-90" /> {selectedApp.firstPreferenceSubsection}</p>}
                     </div>
                     {selectedApp.secondPreference && (
                       <div>
                         <p className="text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">Second Choice</p>
                         <p className="text-sm font-bold text-gray-900">{selectedApp.secondPreference}</p>
-                        {selectedApp.secondPreferenceSubsection && <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1"><ChevronDown size={12} className="-rotate-90"/> {selectedApp.secondPreferenceSubsection}</p>}
+                        {selectedApp.secondPreferenceSubsection && <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1"><ChevronDown size={12} className="-rotate-90" /> {selectedApp.secondPreferenceSubsection}</p>}
                       </div>
                     )}
                   </div>
@@ -859,28 +857,28 @@ export const AdminDashboard: React.FC = () => {
               {/* Written Responses */}
               <div className="space-y-4 pt-4 border-t border-gray-100">
                 <h3 className="font-orbitron font-bold text-sm tracking-wider uppercase text-gray-900">Written Responses</h3>
-                
+
                 <div className="space-y-4">
                   <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
                     <p className="text-xs font-mono text-blue-600 uppercase tracking-wider font-bold mb-3">Why Diganta?</p>
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedApp.whyDiganta}</p>
                   </div>
-                  
+
                   <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
                     <p className="text-xs font-mono text-blue-600 uppercase tracking-wider font-bold mb-3">Aspects of Interest</p>
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedApp.aspectsOfInterest}</p>
                   </div>
-                  
+
                   <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
                     <p className="text-xs font-mono text-blue-600 uppercase tracking-wider font-bold mb-3">Skills & Strengths</p>
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedApp.skillsOrStrengths}</p>
                   </div>
-                  
+
                   <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
                     <p className="text-xs font-mono text-blue-600 uppercase tracking-wider font-bold mb-3">Relevant Experiences</p>
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedApp.relevantExperiences}</p>
                   </div>
-                  
+
                   <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
                     <p className="text-xs font-mono text-blue-600 uppercase tracking-wider font-bold mb-3">Hopes to Learn</p>
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedApp.hopeToLearn}</p>
