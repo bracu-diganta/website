@@ -11,7 +11,9 @@ const ADMIN_EMAILS = [
   'hasna.hena.jui@g.bracu.ac.bd',
   'chironjeet.joy@bracu.ac.bd',
   'md.mountashiour.rahman@g.bracu.ac.bd',
-  'tanvir.ahmed.tonmoy@g.bracu.ac.bd'
+  'tanvir.ahmed.tonmoy@g.bracu.ac.bd',
+  'atib.mohammad@bracu.ac.bd',
+  'istiakbishal040@gmail.com'
 ];
 
 export const AdminLogin: React.FC = () => {
